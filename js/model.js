@@ -24,12 +24,7 @@ this.FTKJ = this.FTKJ || {};
 			{id: 'smoke', type: 'texture', url: './imgs/smokeparticle.png'}, 
 		];
 
-		this.areaJson = {
-			area1: ['tv', 'server', 'floor1', 'chair', 'pc1_01', 'desk', 'bigdesk'],
-			area2: ['floor2', 'railing', 'railing01', 'chimney', 'chimney01', 'chimney02', 'tower', 'house', 'plc'],
-			area3: ['note', 'floor3', 'pc01', 'pc02', 'pc3_01', 'pc3_02', /*'pc3_03',*/ 'phone', 'line1', 'singal', 'cylinder01', 'cylinder02',/* 'cylinder03',*/ 'ipad'],
-			area4: ['floor4', 'pc4_01', 'server4_01', 'server4_02', 'chair4_01', 'desk4_01']
-		};
+		this.areaJson = FTKJ.posMap.areaJson;
 
 		// {id:model,type:'mtl',url:'./obj/area1/model'}
 		for (let key in this.areaJson) {
@@ -54,299 +49,11 @@ this.FTKJ = this.FTKJ || {};
 
 		this.autoTween = null;
 
-		// pos 位置信息，相对于第一个模型的位置信息，不可用在世界坐标系
-		// area3 服务器
-		this.serverJson1 = {
-			modelName: 'server4_01',
-			pos: [
-				[-1200, 0, 0,'area3_server_B2'],
-				[-2400, 0, 0,'area3_server_B3']
-			]
-		};
-		this.serverJson2 = {
-			modelName: 'server4_02',
-			pos: [
-				[-1200, 0, 0,'area3_server_A2'],
-				[-2400, 0, 0,'area3_server_A3']
-			]
-		};
-
-		// area4 电脑
-		this.pcJson3 = {
-			modelName: 'pc02',
-			pos: [
-				[-450, 0, 0,'area4_pc_A1_2'],
-				[-884, 0, 0,'area4_pc_A1_3'],
-
-				[-40, 0, -430,'area4_pc_A1_4'],
-				[-450, 0, -430,'area4_pc_A1_5'],
-				[-884, 0, -430,'area4_pc_A1_6'],
-
-				[-40, 0, -860,'area4_pc_A1_7'],
-				[-450, 0, -860,'area4_pc_A1_8'],
-				[-884, 0, -860,'area4_pc_A1_9'],
-
-				[-40, 0, -3190 - 430*2,'area4_pc_A2_1'],
-				[-450, 0, -3190 - 430*2,'area4_pc_A2_2'],
-				[-884, 0, -3190 - 430*2,'area4_pc_A2_3'],
-
-				[-40, 0, -3190 - 430,'area4_pc_A2_4'],
-				[-450, 0, -3190 - 430,'area4_pc_A2_5'],
-				[-884, 0, -3190 - 430,'area4_pc_A2_6'],
-
-				[-40, 0, -3190,'area4_pc_A2_7'],
-				[-450, 0, -3190,'area4_pc_A2_8'],
-				[-884, 0, -3190,'area4_pc_A2_9'],
-
-				[1600, 0, 420 , 'area4_pc_B1_1'],
-				[1600, 0, 420 - 440 - 6 ,'area4_pc_B1_2'],
-				[1600, 0, 420 - 440 * 2,'area4_pc_B1_3'],
-				[1600, 0, 420 - 440 * 3,'area4_pc_B1_4'],
-
-				[2672, 0, 420,'area4_pc_B1_5'],
-				[2672, 0, 420 - 440 - 6,'area4_pc_B1_6'],
-				[2672, 0, 420 - 440 * 2,'area4_pc_B1_7'],
-				[2672, 0, 420 - 440 * 3,'area4_pc_B1_8'],
-
-				[3738, 0, 420,'area4_pc_B1_9'],
-				[3738, 0, 420 - 440 - 6,'area4_pc_B1_10'],
-				[3738, 0, 420 - 440 * 2,'area4_pc_B1_11'],
-				[3738, 0, 420 - 440 * 3,'area4_pc_B1_12'],
-
-				[1600, 0, 420 - 3160,'area4_pc_B2_1'],
-				[1600, 0, 420 - 440 - 6 - 3160,'area4_pc_B2_2'],
-				[1600, 0, 420 - 440 * 2 - 3160,'area4_pc_B2_3'],
-				[1600, 0, 420 - 440 * 3 - 3160,'area4_pc_B2_4'],
-
-				[2672, 0, 420 - 3160,'area4_pc_B2_5'],
-				[2672, 0, 420 - 440 - 6 - 3160,'area4_pc_B2_6'],
-				[2672, 0, 420 - 440 * 2 - 3160,'area4_pc_B2_7'],
-				[2672, 0, 420 - 440 * 3 - 3160,'area4_pc_B2_8'],
-
-				[3738, 0, 420 - 3160,'area4_pc_B2_9'],
-				[3738, 0, 420 - 440 - 6 - 3160,'area4_pc_B2_10'],
-				[3738, 0, 420 - 440 * 2 - 3160,'area4_pc_B2_11'],
-				[3738, 0, 420 - 440 * 3 - 3160,'area4_pc_B2_12'],
-			]
-		};
-		
-		this.caseJson1 = {
-			modelName: 'pc3_02',
-			pos: [
-				[0, 0, -440 - 6],
-				[0, 0, -440 * 2],
-				[0, 0, -440 * 3],
-
-				[1072, 0, 0],
-				[1072, 0, -440 - 6],
-				[1072, 0, -440 * 2],
-				[1072, 0, -440 * 3],
-
-				[1072 * 2, 0, 0],
-				[1072 * 2, 0, -440 - 6],
-				[1072 * 2, 0, -440 * 2],
-				[1072 * 2, 0, -440 * 3],
-
-				[0,0,-3160],
-				[0, 0, -440 - 6 - 3160],
-				[0, 0, -440 * 2 - 3160],
-				[0, 0, -440 * 3 - 3160],
-
-				[1072, 0, 0 - 3160],
-				[1072, 0, -440 - 6 - 3160],
-				[1072, 0, -440 * 2 - 3160],
-				[1072, 0, -440 * 3 - 3160],
-
-				[1072 * 2, 0, 0 - 3160],
-				[1072 * 2, 0, -440 - 6 - 3160],
-				[1072 * 2, 0, -440 * 2 - 3160],
-				[1072 * 2, 0, -440 * 3 - 3160],
-			]
-		};
-		
-		this.caseJson2 = {
-			modelName: 'cylinder02',
-			pos: [
-				[0, 0, -440 - 6],
-				[0, 0, -440 * 2],
-				[0, 0, -440 * 3],
-
-				[1072, 0, 0],
-				[1072, 0, -440 - 6],
-				[1072, 0, -440 * 2],
-				[1072, 0, -440 * 3],
-
-				[1072 * 2, 0, 0],
-				[1072 * 2, 0, -440 - 6],
-				[1072 * 2, 0, -440 * 2],
-				[1072 * 2, 0, -440 * 3],
-
-				[0,0,-3160],
-				[0, 0, -440 - 6 - 3160],
-				[0, 0, -440 * 2 - 3160],
-				[0, 0, -440 * 3 - 3160],
-
-				[1072, 0, 0 - 3160],
-				[1072, 0, -440 - 6 - 3160],
-				[1072, 0, -440 * 2 - 3160],
-				[1072, 0, -440 * 3 - 3160],
-
-				[1072 * 2, 0, 0 - 3160],
-				[1072 * 2, 0, -440 - 6 - 3160],
-				[1072 * 2, 0, -440 * 2 - 3160],
-				[1072 * 2, 0, -440 * 3 - 3160],
-			]
-		};
-
-		// area2 plc
-		this.plcJson = {
-			modelName: 'plc',
-			pos: [
-
-				[800, -950, 0,'area2_plc1'],
-				[800, -950, -900,'area2_plc2'],
-				[800, -950, -2200,'area2_plc3'],
-
-				[0, 0, -900,'area2_plc5'],
-				[-200, -950, -1550,'area2_plc6'],
-				[-200, -950, -2150,'area2_plc7'],
-
-				[-400, -950, -2850,'area2_plc8'],
-			],
-			pos2: [
-				[-900, -950, -3100],
-				[-2000, -950, -3100],
-			]
-		};
-
-		// area2 chimney
-		this.chimneyJson = {
-			modelName:'chimney',
-			pos:[
-				[0,0,2000],
-				[-200,0,4000],
-				[1500,0,5000],
-			]
-		};
-
-		// area2 tower
-		this.towerJson = {
-			modelName:'tower',
-			pos:[
-				[1000,0,0]
-			]
-		};
-
-		// area1 pc
-		this.pcJson1 = {
-			modelName:'pc1_01',
-			pos:[
-				[0,0,-425,'area1_pc2'],
-				[0,0,-425 * 2,'area1_pc3'],
-				[0,0,-425 * 3,'area1_pc4'],
-				[0,0,-425 * 4,'area1_pc5'],
-			]
-		};
-
-		// area1 chair
-		this.chairJson1 = {
-			modelName:'chair',
-			pos:[
-				[0,0,60-425],
-				[0,0,60-425 * 2],
-				[0,0,60-425 * 3],
-				[0,0,60-425 * 4],
-
-				[1800,0,500],
-				[1800,0,0],
-				[1800,0,-1800],
-				[1800,0,-2300],
-			]
-		};
+		this.objPosArr = FTKJ.posMap.objPosArr;
 
 		this.mcMap = {}; // 存3D对象。
 
-		this.positionMap = {
-			area1_pc1:[-4.4,-1,-115.8],
-			area1_pc2:[-4.4,-1,-124.3],
-			area1_pc3:[-4.4,-1,-132.8],
-			area1_pc4:[-4.4,-1,-141.3],
-			area1_pc5:[-4.4,-1,-149.8],
-			
-			area4_pc_A1_1:[-153.5,-12.6,-51],
-			area4_pc_A1_2:[-144.5,-12.6,-51],
-			area4_pc_A1_3:[-136.1,-12.6,-51],
-
-			area4_pc_A1_4:[-153.5,-12.6,-42.3],
-			area4_pc_A1_5:[-144.5,-12.6,-42.3],
-			area4_pc_A1_6:[-136.1,-12.6,-42.3],
-
-			area4_pc_A1_7:[-153.5,-12.6,-34.1],
-			area4_pc_A1_8:[-144.5,-12.6,-34.1],
-			area4_pc_A1_9:[-136.3,-12.6,-34.1],
-
-			area4_pc_A2_1:[-89.7,-12.6,-51],
-			area4_pc_A2_2:[-80.7,-12.6,-51],
-			area4_pc_A2_3:[-72.3,-12.6,-51],
-
-			area4_pc_A2_4:[-89.7,-12.6,-42.3],
-			area4_pc_A2_5:[-80.7,-12.6,-42.3],
-			area4_pc_A2_6:[-72.3,-12.6,-42.3],
-
-			area4_pc_A2_7:[-89.7,-12.6,-34.1],
-			area4_pc_A2_8:[-80.7,-12.6,-34.1],
-			area4_pc_A2_9:[-72.3,-12.6,-34.1],
-
-			area4_pc_B1_1:[-162,-12.6,-1.3],
-			area4_pc_B1_2:[-153,-12.6,-1.3],
-			area4_pc_B1_3:[-144.4,-12.6,-1.3],
-			area4_pc_B1_4:[-135.7,-12.6,-1.3],
-
-			area4_pc_B1_5:[-162,-12.6,20.1],
-			area4_pc_B1_6:[-153,-12.6,20.1],
-			area4_pc_B1_7:[-144.4,-12.6,20.1],
-			area4_pc_B1_8:[-135.7,-12.6,20.1],
-
-			area4_pc_B1_9:[-162,-12.6,41.4],
-			area4_pc_B1_10:[-153,-12.6,41.4],
-			area4_pc_B1_11:[-144.4,-12.6,41.4],
-			area4_pc_B1_12:[-135.7,-12.6,41.4],
-
-			area4_pc_B2_1:[-98.65,-12.6,-1.3],
-			area4_pc_B2_2:[-89.65,-12.6,-1.3],
-			area4_pc_B2_3:[-81.05,-12.6,-1.3],
-			area4_pc_B2_4:[-72.35,-12.6,-1.3],
-
-			area4_pc_B2_5:[-98.65,-12.6,20.1],
-			area4_pc_B2_6:[-89.65,-12.6,20.1],
-			area4_pc_B2_7:[-81.05,-12.6,20.1],
-			area4_pc_B2_8:[-72.35,-12.6,20.1],
-
-			area4_pc_B2_9:[-98.65,-12.6,41.4],
-			area4_pc_B2_10:[-89.65,-12.6,41.4],
-			area4_pc_B2_11:[-81.05,-12.6,41.4],
-			area4_pc_B2_12:[-72.35,-12.6,41.4],
-
-			area3_server_A1:[-30,-1,108],
-			area3_server_A2:[-30,-1,132],
-			area3_server_A3:[-30,-1,156],
-
-			area3_server_B1:[29,-1,108],
-			area3_server_B2:[29,-1,132],
-			area3_server_B3:[29,-1,156],
-
-			area2_plc1:[98,-9,-25.8],
-			area2_plc2:[98,-9,-7.8],
-			area2_plc3:[98,-9,18.2],
-			area2_plc4:[114,10,-25.8],
-			area2_plc5:[114,10,-7.8],
-
-			area2_plc6:[118,-9,5.2],
-			area2_plc7:[118,-9,17.2],
-			area2_plc8:[121.5,-9,31.2],
-			area2_plc9:[131.7,-9,36],
-			area2_plc10:[131.7,-9,36],
-		};
+		this.positionMap = FTKJ.posMap.positionMap;
 	};
 
 	/**
@@ -413,8 +120,8 @@ this.FTKJ = this.FTKJ || {};
 					box.setFromObject(result);
 					let x = (box.min.x + box.max.x) / 2;
 					let z = (box.min.z + box.max.z) / 2;
-					for (let i = 0; i < this.plcJson.pos2.length; i++) {
-						let item = this.plcJson.pos2[i];
+					for (let j = 0; j < this.objPosArr[4].pos2.length; j++) {
+						let item = this.objPosArr[4].pos2[j];
 						let resultMidGroup = new THREE.Group();
 						resultMidGroup.position.set(x + item[0], item[1], z + item[2]);
 						let plc = result.clone();
@@ -433,30 +140,16 @@ this.FTKJ = this.FTKJ || {};
 				}else if (item == 'pc1_01') {
 					this.setMcMap('area1_pc1',result);	
 				}else if (item == 'server4_01') {
-					console.log(result);
+					this.setMcMap('area3_server_B1',result);
+				}else if (item == 'server4_02') {
+					this.setMcMap('area3_server_A1',result);
 				}
 
-				this.saveMaterialColor(result.children[0].material);
+				this.saveMaterialColor(result);
 
-				// //area1
-				this.cloneObj(result, item, this.pcJson1, areaGroup);
-				this.cloneObj(result, item, this.chairJson1, areaGroup);
-				
-				// //area2
-				this.cloneObj(result, item, this.plcJson, areaGroup);
-				this.cloneObj(result, item, this.chimneyJson, areaGroup);
-				this.cloneObj(result, item, this.towerJson, areaGroup);
-				
-
-				// // area4
-				this.cloneObj(result, item, this.pcJson3, areaGroup);
-				this.cloneObj(result, item, this.caseJson1, areaGroup);
-				this.cloneObj(result, item, this.caseJson2, areaGroup);
-				
-				// // area3
-				this.cloneObj(result, item, this.serverJson1, areaGroup);
-				this.cloneObj(result, item, this.serverJson2, areaGroup);
-				
+				for (let j = 0; j < this.objPosArr.length; j++) {
+					this.cloneObj(result,item,this.objPosArr[j],areaGroup);
+				}
 			}
 			let box = new THREE.Box3();
 			box.setFromObject(areaGroup);
@@ -516,10 +209,6 @@ this.FTKJ = this.FTKJ || {};
 		this.initLight();
 
 		this.initParticleMaterial();
-
-		// this.initLineMaterial();
-
-		// this.initLineParticles();
 		
 		this.modelReady();
 	};
@@ -625,16 +314,23 @@ this.FTKJ = this.FTKJ || {};
 			onComplete:function(){
 				_this.container.remove(item);
 				_this.container.remove(line);
-				if (eObj && eObj.children[0].material.userData) {
-					_this.setMaterialColor(eObj.children[0].material);
+				if (eObj) {
+					let count = eObj.userData['count'] || 0;
+					eObj.userData['count'] = --count;
+					if (eObj && eObj.children[0].material.userData && count == 0) {
+						_this.setMaterialColor(eObj);
+					}
 				}
+				
 			}
 		});
 		if (eObj) {
+			let count = eObj.userData['count'] || 0;
+			eObj.userData['count'] = ++count;  // 记录目标值为该物体的数量，在完成时执行--操作,当值为0时,物体回到原来的颜色
 			new TweenMax({per:0},2.7,{
 				per:1,
 				onComplete:function(){
-					_this.setMaterialColor(eObj.children[0].material,line.userData['lineColor']);
+					_this.setMaterialColor(eObj,line.userData['lineColor']);
 				}
 			});
 		}
@@ -801,7 +497,7 @@ this.FTKJ = this.FTKJ || {};
 			this.raycaster.setFromCamera(this.mouse, this.camera);
 			let intersects = this.raycaster.intersectObjects(this.modelGroup.children);
 			if (intersects.length) {
-				let clickObj = intersects[0].object;
+				// let clickObj = intersects[0].object;
 				// for (let i = 0; i < this.wireframeArr.length; i++) {
 				// 	let item = this.wireframeArr[i];
 				// 	if (item.name == clickObj.name) {
@@ -863,20 +559,16 @@ this.FTKJ = this.FTKJ || {};
 			for (let i = 0; i < json.pos.length; i++) {
 				let item = json.pos[i];
 				let newChild = child.clone();
-				if (child.children[0].material.length === undefined) {
-					let newM = child.children[0].material.clone();
-					newChild.children[0].material = newM;
-					newM.userData['realColor'] = newM.color;
-				}else{
-					if (modelName == 'pc1_01') {
-						console.log(child.children[0]);
-					}
-					for (let j = 0; j < child.children[0].material.length; j++) {
-						let newM = child.children[0].material[j].clone();
-						newChild.children[0].material[j] = newM;
-						newM.userData['realColor'] = newM.color;
-					}
-				}
+				// if (child.children[0].material.length === undefined) {
+				// 	let newM = child.children[0].material.clone();
+				// 	newChild.children[0].material = newM;
+				// 	newM.userData['realColor'] = newM.color;
+				// }else{
+				// 	if (modelName == 'pc1_01') {
+				// 		console.log(child.children[0]);
+				// 	}
+					newChild.userData['material'] = newChild.children[0].material;
+				// }
 				if (modelName == 'cylinder03') {
 					item[2] += 40;
 					item[0] += 10;
@@ -919,25 +611,33 @@ this.FTKJ = this.FTKJ || {};
 		return this.mcMap[id];
 	};
 
-	p.saveMaterialColor = function(m){
-
-		if (m.length === undefined) {
-			m.userData['realColor'] = m.color;
-		}else{
-			for (var i = 0; i < m.length; i++) {
-				m[i].userData['realColor'] = m[i].color;
-			}
-		}
+	p.saveMaterialColor = function(obj){
+		let m = obj.children[0].material;
+		// if (m.length === undefined) {
+			// m.userData['realColor'] = m.color;
+		// }else{
+		// 	for (var i = 0; i < m.length; i++) {
+		// 		m[i].userData['realColor'] = m[i].color;
+		// 	}
+			obj.userData['material'] = m;
+		// }
 	};
 
-	p.setMaterialColor = function(m,color){
-		if (m.length === undefined) {
-			m.color = color || m.userData['realColor'];
+	p.setMaterialColor = function(obj,color){
+		let newM;
+		if (!!color) {
+			newM = new THREE.MeshPhongMaterial({color:color});
 		}else{
-			for (var i = 0; i < m.length; i++) {
-				m[i].color = color || m[i].userData['realColor'];
-			}
+			newM = obj.userData['material'];
 		}
+		obj.children[0].material = newM;
+		// if (m.length === undefined) {
+		// 	m.color = color || m.userData['realColor'];
+		// }else{
+		// 	for (var i = 0; i < m.length; i++) {
+		// 		m[i].color = color || m[i].userData['realColor'];
+		// 	}
+		// }
 	};
 
 	// 数组里是否有某项

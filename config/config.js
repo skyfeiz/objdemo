@@ -60,8 +60,6 @@ this.FTKJ.config = {
 		'192.168.2.217':'area2_plc8',
 		'192.168.2.218':'area2_plc9',
 		'192.168.2.219':'area2_plc10',
-		'192.168.2.220':'area2_plc11',
-		'192.168.2.221':'area2_plc12',
 		/* area3 server */
 		'172.25.21.101':'area3_server_A1', 	// ICS-VSPHD001 PHD历史数据库
 		'192.168.3.12':'area3_server_A2',

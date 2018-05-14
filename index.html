@@ -15,6 +15,7 @@
 	<script src="lib/echarts.min.js"></script>
 	<script src="lib/TweenMax.js"></script>
 	<script src="config/config.js"></script>
+	<script src="js/posMap.js"></script>
 	<script src="js/axis.js"></script>
 	<script src="js/shaders.js"></script>
 	<script src="js/model.js"></script>
@@ -28,12 +29,12 @@
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.left = '0px';
 			stats.domElement.style.top = '0px';
-			// document.body.appendChild(stats.domElement);
+			document.body.appendChild(stats.domElement);
 			var main = new FTKJ.Main($('#container3D')[0]);
 			render();
 			function render() {
 				main.render();
-				// stats.update();
+				stats.update();
 				requestAnimationFrame(render);
 			}
 		});

@@ -12,8 +12,14 @@ this.FTKJ = this.FTKJ || {};
 
 		this.objNames = [];
 		for (let key in FTKJ.config.ipToPc) {
+
 			this.objNames.push(FTKJ.config.ipToPc[key]);
 		}
+
+		// 正则匹配
+		this.regJson = {
+			time: /\d{2}\:\d{2}\:\d{2}/, //  13:12:38
+		};
 
 		let _this = this;
 
@@ -64,13 +70,13 @@ this.FTKJ = this.FTKJ || {};
 	};
 
 	p.test =  function() {
-		
+		this.$leftMask.trigger('mousedown');
 	 	for (var i = 0; i < 200; i++) {
 	 		let json = {
 			 	'attack_type': Math.random()*4 | 0,    // 0->工控攻击  1->正在扫描	2->传统攻击(默认)
 			 	'ip_source': '192.168.2.115:42790', 		// 源IP
-			 	'ip_destination': '172.25.21.102',  // 目标IP 
-			 	// 'ip_destination': '192.168.1.11',  // 目标IP 
+			 	'ip_destination': '192.168.1s.12',  // 目标IP
+			 	// 'ip_destination': '192.168.s3.13',  // 目标IP
 			 	'time': 'May-8-23:13:04' 	// 时间 ，取时分秒。
 		 	};
 	 		this.redLogData.push(json);
@@ -128,7 +134,6 @@ this.FTKJ = this.FTKJ || {};
 		});
 	};
 
-
 	/**
 	 * 后台每次传入一个数据，
 	 * {
@@ -144,28 +149,7 @@ this.FTKJ = this.FTKJ || {};
 			json = eval('('+json+')');
 		}
 		this.redLogData.push(json);
-		// let cName = 'c_blue';
-		// let cColor = '#2896ff';
-		// let sName = '传统攻击';
-		// if (json['attack_type'] == 0) {
-		// 	cName = 'c_red';
-		// 	sName = '工控攻击';
-		// 	cColor = '#02c096';
-		// 	this.$num3.html(this.$num3.html()*1 + 1);
-		// }else if (json['attack_type'] == 1) {
-		// 	cName = 'c_yellow';
-		// 	sName = '正在扫描';
-		// 	cColor = '#ffaf15';
-		// 	this.$num1.html(this.$num1.html()*1 + 1);
-		// }else{
-		// 	this.$num2.html(this.$num2.html()*1 + 1);
-		// }
-		// let str = '<li class="limitli '+cName+'">'+
-		// 			'<span>'+sName+'</span>'+
-		// 			'<p>'+json['time'].split('-')[2]+'  '+json['ip_source']+' -> '+json['ip_destination']+'</p>'+
-		// 		'</li>';
-		// this.upDateLog(this.$redLogUl,10,str,0.5);
-		// this.model.addLine(this.ipToPc(json['ip_source']),this.ipToPc(json['ip_destination']),cColor);
+
 	};
 
 	/**
@@ -199,7 +183,7 @@ this.FTKJ = this.FTKJ || {};
 		this.$num4.html(this.$num4.html()*1 + 1);
 		let str = '<li class="limitli '+cName+'">'+
 				'<span>'+sName+'</span>'+
-				'<p>'+arr[2].match(/\d{2}\:\d{2}\:\d{2}/)+'  '+arr[1]+' '+arr[3]+'</p>'+
+				'<p>'+arr[2].match(this.regJson.time)+'  '+arr[1]+' '+arr[3]+'</p>'+
 			'</li>';
 		this.upDateLog(this.$whiteLogUl,10,str,0.5);
 	};
@@ -218,16 +202,17 @@ this.FTKJ = this.FTKJ || {};
 			arr = eval('('+arr+')');
 		}
 		let str = '';
-		for (let i = 0; i < arr.length; i++) {
+		for (let i = 1; i <= arr.length-1; i++) {
 			if (i >= 14) {break;}
+			let item = arr[i];
 			str += '<li class="limitli v_middle">'+
-				'<span class="spanw1">1</span>'+
-				'<span class="spanw2">八一队</span>'+
-				'<span class="spanw3">1450</span>'+
-				'<span class="spanw4"><b class="flag f_red"></b>10</span>'+
+				'<span class="spanw1">'+i+'</span>'+
+				'<span class="spanw2">'+item.group_info.name+'</span>'+
+				'<span class="spanw3">'+item.total_score+'</span>'+
+				'<span class="spanw4"><b class="flag f_red"></b>'+item.total_ques+'</span>'+
 			'</li>';
-			// this.$rankingUl.html(str);
 		}
+		this.$rankingUl.html(str);
 	};
 
 	/**
@@ -282,7 +267,6 @@ this.FTKJ = this.FTKJ || {};
 			setTimeout(function(){
 				let json = _this.redLogData.shift();
 				let loopTime = 100;
-				let len = _this.redLogData.length;
 				if (json) {
 					let cName = 'c_blue';
 					let cColor = '#2896ff';
@@ -343,7 +327,7 @@ this.FTKJ = this.FTKJ || {};
 			}
 			let str = '<li class="limitli '+cName+'">'+
 				'<span>'+arr[3]+'</span>'+
-				'<p>'+arr[2].match(/\d{2}\:\d{2}\:\d{2}/)+'  '+arr[0]+' '+arr[1]+'</p>'+
+				'<p>'+arr[2].match(_this.regJson.time)+'  '+arr[0]+' '+arr[1]+'</p>'+
 			'</li>';
 			_this.$num5.html(_this.$num5.html()*1 + 1);
 			_this.upDateLog(_this.$blueLogUl,10,str,0.5);
@@ -365,12 +349,12 @@ this.FTKJ = this.FTKJ || {};
 			_this.model.pause();
 			clearTimeout(timer);
 			timer = setTimeout(function(){
-				console.log(123);
 				_this.model.reauto();
 			},5000);
 		});
 
 		$(window).mousedown(function(){
+			console.log('手动控制视角');
 			_this.model.pause();
 			clearTimeout(timer);
 		});
@@ -378,7 +362,7 @@ this.FTKJ = this.FTKJ || {};
 		$(window).mouseup(function() {
 			clearTimeout(timer);
 			timer = setTimeout(function(){
-				console.log('重新自动');
+				console.log('恢复自动模式');
 				_this.model.reauto();
 			},5000);
 		});
