@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>screen</title>
+	<link rel="stylesheet" href="css/screen.css" />
+	<script src="lib/jquery.min.js"></script>
+	<script src="lib/three.min.js"></script>
+	<script src="lib/OBJLoader.js"></script>
+	<script src="lib/MTLLoader.js"></script>
+	<script src="lib/OrbitControls.js"></script>
+	<script src="lib/stats.min.js"></script>
+	<script src="lib/ThreeGroupLoader.js"></script>
+	<script src="lib/ThreeBase.js"></script>
+	<script src="lib/echarts.min.js"></script>
+	<script src="lib/TweenMax.js"></script>
+	<script src="config/config.js"></script>
+	<script src="js/axis.js"></script>
+	<script src="js/shaders.js"></script>
+	<script src="js/model.js"></script>
+	<script src="js/main.js"></script>
+	<script>
+		console.warn = function(){
+
+		};
+		$(function() {
+			var stats = new Stats();
+			stats.domElement.style.position = 'absolute';
+			stats.domElement.style.left = '0px';
+			stats.domElement.style.top = '0px';
+			// document.body.appendChild(stats.domElement);
+			var main = new FTKJ.Main($('#container3D')[0]);
+			render();
+			function render() {
+				main.render();
+				// stats.update();
+				requestAnimationFrame(render);
+			}
+		});
+	</script>
+</head>
+<body>
+	<div class="main">
+		<!--3D场景容器-->
+		<div class="container3D" id="container3D"></div>
+		
+		<div class="header">
+			<p class="h_title">2018年工业信息安全技能大赛</p>
+		</div>
+
+		<ul class="middle opa0" id="middle">
+			<li class="middle_li color1">
+				<div class="litop">
+					<p class="litop_title">扫描次数</p>
+					<span class="borderbg tl"></span>
+					<span class="borderbg tr"></span>
+					<span class="borderbg bl"></span>
+					<span class="borderbg br"></span>
+				</div>
+				<div class="libottom">
+					<p id="num1">0</p>
+					<div class="chartdom" color="#ffaf15"></div>
+				</div>
+			</li>
+			<li class="middle_li color2">
+				<div class="litop">
+					<p class="litop_title">传统攻击</p>
+					<span class="borderbg tl"></span>
+					<span class="borderbg tr"></span>
+					<span class="borderbg bl"></span>
+					<span class="borderbg br"></span>
+				</div>
+				<div class="libottom">
+					<p id="num2">0</p>
+					<div class="chartdom" color="#2896ff"></div>
+				</div>
+			</li>
+			<li class="middle_li color3">
+				<div class="litop">
+					<p class="litop_title">工控攻击</p>
+					<span class="borderbg tl"></span>
+					<span class="borderbg tr"></span>
+					<span class="borderbg bl"></span>
+					<span class="borderbg br"></span>
+				</div>
+				<div class="libottom">
+					<p id="num3">0</p>
+					<div class="chartdom" color="#02c096"></div>
+				</div>
+			</li>
+			<li class="middle_li color4">
+				<div class="litop">
+					<p class="litop_title">攻破次数</p>
+					<span class="borderbg tl"></span>
+					<span class="borderbg tr"></span>
+					<span class="borderbg bl"></span>
+					<span class="borderbg br"></span>
+				</div>
+				<div class="libottom">
+					<p id="num4">0</p>
+					<div class="chartdom" color="#18fcff"></div>
+				</div>
+			</li>
+			<li class="middle_li color5">
+				<div class="litop">
+					<p class="litop_title">报警次数</p>
+					<span class="borderbg tl"></span>
+					<span class="borderbg tr"></span>
+					<span class="borderbg bl"></span>
+					<span class="borderbg br"></span>
+				</div>
+				<div class="libottom">
+					<p id="num5">0</p>
+					<div class="chartdom" color="#f31d1d"></div>
+				</div>
+			</li>
+		</ul>
+		
+		<span class="leftMask  opa0" id="leftMask"></span>
+		<span class="rightMask dnone opa0" id="rightMask"></span>
+
+		<div class="m_left1 opa0" id="redLog">
+			<div class="bgbar">
+				<span class="triangle"></span>
+			</div>
+			<div class="title v_middle">
+				<p>红方日志</p>
+				<span class="up_arrow"></span>
+			</div>
+			<div class="content">
+				<div class="limitdiv">
+					<ul class="limitul" id="redLogUl">
+						<!-- <li class="limitli c_yellow">
+							<span>正在扫描</span>
+							<p>14:57:25  192.168.111.102:55555 -> 192.168.111.102:55555</p>
+						</li> -->
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="m_right1 m_left1 opa0" id="blueLog">
+			<div class="bgbar">
+				<span class="triangle"></span>
+			</div>
+			<div class="title v_middle">
+				<p>蓝方日志</p>
+				<span class="up_arrow"></span>
+			</div>
+
+			<div class="content">
+				<div class="limitdiv">
+					<ul class="limitul" id="blueLogUl">
+						<!-- <li class="limitli c_green">
+							<span>PLC告警</span>
+							<p>14:57:25  八一队攻破XXX赛题</p>
+						</li> -->
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="m_left2 opa0" id="ranking">
+			<div class="bgbar">
+				<span class="triangle"></span>
+			</div>
+			<div class="title v_middle">
+				<p>实时排名</p>
+				<span class="up_arrow"></span>
+			</div>
+			<div class="content">
+				<div class="con_top">
+					<span class="spanw1">实时排名</span>
+					<span class="spanw2">参赛团队</span>
+					<span class="spanw3">积分</span>
+					<span class="spanw4">攻破赛题</span>
+				</div>
+				<div class="con_list">
+					<div class="limitdiv">
+						<ul class="limitul" id="rankingUl">
+							<li class="limitli v_middle">
+								<span class="spanw1">1</span>
+								<span class="spanw2">瑞气十足</span>
+								<span class="spanw3">1450</span>
+								<span class="spanw4"><b class="flag f_red"></b>16</span>
+							</li>
+							<li class="limitli v_middle">
+								<span class="spanw1">2</span>
+								<span class="spanw2">哈工程灯塔实验室</span>
+								<span class="spanw3">1440</span>
+								<span class="spanw4"><b class="flag f_red"></b>15</span>
+							</li>
+							<li class="limitli v_middle">
+								<span class="spanw1">3</span>
+								<span class="spanw2">GSCE</span>
+								<span class="spanw3">1420</span>
+								<span class="spanw4"><b class="flag f_red"></b>14</span>
+							</li>
+							<li class="limitli v_middle">
+								<span class="spanw1">4</span>
+								<span class="spanw2">爱测试</span>
+								<span class="spanw3">1400</span>
+								<span class="spanw4"><b class="flag f_red"></b>13</span>
+							</li>
+							<li class="limitli v_middle">
+								<span class="spanw1">5</span>
+								<span class="spanw2">中国网安</span>
+								<span class="spanw3">1350</span>
+								<span class="spanw4"><b class="flag f_red"></b>12</span>
+							</li>
+							<li class="limitli v_middle">
+								<span class="spanw1">6</span>
+								<span class="spanw2">国信队</span>
+								<span class="spanw3">1150</span>
+								<span class="spanw4"><b class="flag f_red"></b>10</span>
+							</li>
+							<li class="limitli v_middle">
+								<span class="spanw1">7</span>
+								<span class="spanw2">清华紫荆花队</span>
+								<span class="spanw3">1000</span>
+								<span class="spanw4"><b class="flag f_red"></b>9</span>
+							</li>
+							<li class="limitli v_middle">
+								<span class="spanw1">8</span>
+								<span class="spanw2">江南队</span>
+								<span class="spanw3">950</span>
+								<span class="spanw4"><b class="flag f_red"></b>8</span>
+							</li>
+							<li class="limitli v_middle">
+								<span class="spanw1">9</span>
+								<span class="spanw2">赛西安全队</span>
+								<span class="spanw3">720</span>
+								<span class="spanw4"><b class="flag f_red"></b>6</span>
+							</li>
+							<li class="limitli v_middle">
+								<span class="spanw1">10</span>
+								<span class="spanw2">黑龙江省电子技术研究所</span>
+								<span class="spanw3">550</span>
+								<span class="spanw4"><b class="flag f_red"></b>4</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="m_right2 m_left1 opa0" id="whiteLog">
+			<div class="bgbar">
+				<span class="triangle"></span>
+			</div>
+			<div class="title v_middle">
+				<p>白方日志</p>
+				<span class="up_arrow"></span>
+			</div>
+
+			<div class="content">
+				<div class="limitdiv">
+					<ul class="limitul" id="whiteLogUl">
+						<li class="limitli c_green">
+							<span>提交赛题</span>
+							<p>赛西安全队 栗少波提交了停止PLC赛题</p>
+						</li>
+						<li class="limitli c_green">
+							<span>提交赛题</span>
+							<p>中国网安 赵重浩提交了上传PLC梯形图赛题</p>
+						</li>
+						<li class="limitli c_yellow">
+							<span>审核赛题</span>
+							<p>裁判正在审核 栗少波提交的停止PLC赛题</p>
+						</li>
+						<li class="limitli c_yellow">
+							<span>审核赛题</span>
+							<p>裁判正在审核 赵重浩提交的上传PLC梯形图赛题</p>
+						</li>
+						<li class="limitli c_green">
+							<span>提交赛题</span>
+							<p>赛西安全队 张晓宇提交了停止PLC赛题</p>
+						</li>
+						<li class="limitli c_green">
+							<span>提交赛题</span>
+							<p>中国网安 张晓宇提交了上传PLC梯形图赛题</p>
+						</li>
+						<li class="limitli c_yellow">
+							<span>确认赛题</span>
+							<p>裁判确认 栗少波提交的停止PLC赛题</p>
+						</li>
+						<li class="limitli c_yellow">
+							<span>确认赛题</span>
+							<p>裁判确认 赵重浩提交的上传PLC梯形图赛题</p>
+						</li>
+						<li class="limitli c_yellow">
+							<span>审核赛题</span>
+							<p>裁判正在审核 张晓宇提交的停止PLC赛题</p>
+						</li>
+						<li class="limitli c_yellow">
+							<span>审核赛题</span>
+							<p>裁判正在审核 张晓宇提交的上传PLC梯形图赛题</p>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<!-- <div class="m_left1 m_right2" id="whiteSys">
+			<div class="bgbar">
+				<span class="triangle"></span>
+			</div>
+			<div class="title v_middle">
+				<p>白方日志</p>
+				<span class="up_arrow"></span>
+			</div>
+
+			<div class="content">
+				<div class="m_right2_chart" id="m_right2_chart"></div>
+				<div class="posdiv">
+					<div class="limitdiv">
+						<ul class="limitul">
+							<li class="limitli c_green">
+								<span>PLC告警</span>
+								<p>14:57:25  八一队攻破XXX赛题</p>
+							</li>
+							<li class="limitli c_yellow">
+								<span>工控告警</span>
+								<p>14:57:25  监测到针对PLC的命令改写</p>
+							</li>
+							<li class="limitli c_blue2">
+								<span>报警监测</span>
+								<p>14:57:25  八一队攻破XXX赛题</p>
+							</li>
+							<li class="limitli c_blue2">
+								<span>报警监测</span>
+								<p>14:57:25  八一队攻破XXX赛题</p>
+							</li>
+							<li class="limitli c_green">
+								<span>PLC告警</span>
+								<p>14:57:25  八一队攻破XXX赛题</p>
+							</li>
+							<li class="limitli c_yellow">
+								<span>PLC告警</span>
+								<p>14:57:25  监测到针对PLC的命令改写</p>
+							</li>
+							<li class="limitli c_blue3">
+								<span>PLC告警</span>
+								<p>14:57:25  监测到针对PLC的命令改写</p>
+							</li>
+							<li class="limitli c_yellow">
+								<span>PLC告警</span>
+								<p>14:57:25  监测到针对PLC的命令改写</p>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div> -->
+	</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
