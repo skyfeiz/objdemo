@@ -15,13 +15,16 @@ this.FTKJ = this.FTKJ || {};
 
 	p.init = function() {
 		this.canOrbit = true;
-
+		// this.controls.maxDistance = 1000;
 		// 加载预定的资源，加载后的资源会放在this.resourcesMap里面，通过id访问 
 		// 当资源加载完成后会自动调用initObject3D方法。
 		// mtl 类型，会加载两个文件，url+.mtl 和 url+.obj
+		let testPath = './';
+		// let testPath = '/static/big_screen/';
 		let array = [
-			{id: 'spark', type: 'texture', url: './imgs/spark.png'},
-			{id: 'smoke', type: 'texture', url: './imgs/smokeparticle.png'}, 
+			{id: 'spark', type: 'texture', url: testPath + 'imgs/spark.png'}, 
+			{id: 'smoke', type: 'texture', url: testPath + 'imgs/smokeparticle.png'}, 
+			{id: 'font', type: 'font', url: testPath + 'obj/front/FZLanTingHeiS-UL-GB_Regular.json'}, 
 		];
 
 		this.areaJson = FTKJ.posMap.areaJson;
@@ -33,7 +36,7 @@ this.FTKJ = this.FTKJ || {};
 				array.push({
 					id: name,
 					type: 'mtl',
-					url: './obj/' + key + '/' + name
+					url: testPath + 'obj/' + key + '/' + name
 				});
 			}
 		}
@@ -60,25 +63,27 @@ this.FTKJ = this.FTKJ || {};
 	 * 场景初始化完成，资源加载完成会自动调用的函数
 	 */
 	p.initObject3D = function() {
+		this.controls.maxDistance = 1000;
+		this.controls.enableKeys = false;
 		// this.camera.position.set(408 + 3000, 292 + 3000, 190 + 3000);
-		this.cameraVec3 = new THREE.Vector3( 408, 292, 190 );
+		this.cameraVec3 = new THREE.Vector3(408, 292, 190);
 		this.camera.position.set(this.cameraVec3.x, this.cameraVec3.y, this.cameraVec3.z);
 		// this.container.rotation.y = Math.PI;
 		this.camToSave = {
-			position:this.camera.position.clone(),
-			rotation:this.camera.rotation.clone(),
-			controlCenter:this.controls.center.clone()
+			position: this.camera.position.clone(),
+			rotation: this.camera.rotation.clone(),
+			controlCenter: this.controls.center.clone()
 		};
 
 		this.scene.add(this.container);
 		this.raycaster = new THREE.Raycaster();
 		this.mouse = new THREE.Vector2();
 
-		let boxG = new THREE.BoxGeometry(500,10,500);
+		let boxG = new THREE.BoxGeometry(500, 10, 500);
 		let boxM = new THREE.MeshBasicMaterial({
-			color:new THREE.Color(0x022438)
+			color: new THREE.Color(0x022438)
 		});
-		let boxMesh = new THREE.Mesh(boxG,boxM);
+		let boxMesh = new THREE.Mesh(boxG, boxM);
 		boxMesh.position.y = -20;
 		this.container.add(boxMesh);
 
@@ -109,13 +114,13 @@ this.FTKJ = this.FTKJ || {};
 				} else if (item == 'cylinder03') {
 					result.position.z = 20;
 					result.position.x = 10;
-				}else if (item == 'chair') {
+				} else if (item == 'chair') {
 					result.position.z = 60;
-				}else if (item == 'house') {
+				} else if (item == 'house') {
 					let m = result.children[0].material;
 					m.opacity = 0.5;
 					m.transparent = true;
-				}else if (item == 'plc') { // 处理三个需要旋转的plc
+				} else if (item == 'plc') { // 处理三个需要旋转的plc
 					let box = new THREE.Box3();
 					box.setFromObject(result);
 					let x = (box.min.x + box.max.x) / 2;
@@ -132,23 +137,23 @@ this.FTKJ = this.FTKJ || {};
 						plc.position.set(-x, 0, -z);
 						resultMidGroup.rotation.y = Math.PI / 2;
 						areaGroup.add(resultMidGroup);
-						this.setMcMap('area2_plc'+(9+i),plc);
+						this.setMcMap('area2_plc' + (9 + i), plc);
 					}
-					this.setMcMap('area2_plc4',result);
-				}else if (item == 'pc02') {
+					this.setMcMap('area2_plc4', result);
+				} else if (item == 'pc02') {
 					result.position.x = -40;
-				}else if (item == 'pc1_01') {
-					this.setMcMap('area1_pc1',result);	
-				}else if (item == 'server4_01') {
-					this.setMcMap('area3_server_B1',result);
-				}else if (item == 'server4_02') {
-					this.setMcMap('area3_server_A1',result);
+				} else if (item == 'pc1_01') {
+					this.setMcMap('area1_pc1', result);
+				} else if (item == 'server4_01') {
+					this.setMcMap('area3_server_B1', result);
+				} else if (item == 'server4_02') {
+					this.setMcMap('area3_server_A1', result);
 				}
 
 				this.saveMaterialColor(result);
 
 				for (let j = 0; j < this.objPosArr.length; j++) {
-					this.cloneObj(result,item,this.objPosArr[j],areaGroup);
+					this.cloneObj(result, item, this.objPosArr[j], areaGroup);
 				}
 			}
 			let box = new THREE.Box3();
@@ -160,10 +165,10 @@ this.FTKJ = this.FTKJ || {};
 			areaMidGroup.add(areaGroup);
 			areaGroup.position.set(-x, 0, -z);
 			areaGroup = areaMidGroup;
-			if(key == 'area1'){
-				areaGroup.position.set(x + 30/scale,0,z + 50/scale);
-			}else if (key == 'area2') {
-				areaGroup.position.set(x - 30/scale,0,z+ 50/scale);
+			if (key == 'area1') {
+				areaGroup.position.set(x + 30 / scale, 0, z + 50 / scale);
+			} else if (key == 'area2') {
+				areaGroup.position.set(x - 30 / scale, 0, z + 50 / scale);
 				areaGroup.rotation.y = Math.PI;
 			} else if (key == 'area3') {
 				areaGroup.position.set(-125 / scale, 0, 0);
@@ -175,7 +180,7 @@ this.FTKJ = this.FTKJ || {};
 			modelGroup.add(areaGroup);
 		}
 
-		console.log(this.mcMap);
+		// console.log(this.mcMap);
 
 		this.container.add(modelGroup);
 		this.modelGroup = modelGroup;
@@ -191,16 +196,18 @@ this.FTKJ = this.FTKJ || {};
 		// 	}
 		// });
 		// 
-		let autoObj = {per:0};
+		let autoObj = {
+			per: 0
+		};
 
-		this.autoTween = new TweenMax(autoObj,40,{
-			per:1,
-			ease:Linear.easeNone,
-			delay:3,
-			repeat:-1,
-			onUpdateParams:[this.container],
-			onUpdate:function(group) {
-				group.rotation.y = -Math.PI*2*autoObj.per;
+		this.autoTween = new TweenMax(autoObj, 40, {
+			per: 1,
+			ease: Linear.easeNone,
+			delay: 3,
+			repeat: -1,
+			onUpdateParams: [this.container],
+			onUpdate: function(group) {
+				group.rotation.y = -Math.PI * 2 * autoObj.per;
 			}
 		});
 
@@ -209,52 +216,144 @@ this.FTKJ = this.FTKJ || {};
 		this.initLight();
 
 		this.initParticleMaterial();
-		
+
+		this.initAreaName();
+
 		this.modelReady();
+	};
+
+	p.initAreaName = function() {
+		let area1Text = this.createFont({
+			text:'监控区',
+			y:-12,
+			z:-70
+		});
+		area1Text.rotation.x = Math.PI/2;
+		area1Text.rotation.y = Math.PI;
+
+		let area2Text = this.createFont({
+			text:'工控区',
+			y:-12,
+			x:60,
+		});
+		area2Text.rotation.x = -Math.PI/2;
+		area2Text.rotation.z = Math.PI/2;
+
+		let area3Text = this.createFont({
+			text:'服务器区',
+			y:-12,
+			x:-65,
+		});	
+		area3Text.rotation.x = -Math.PI/2;
+		area3Text.rotation.z = -Math.PI/2;
+
+		let area4Text = this.createFont({
+			text:'攻击区',
+			y:-12,
+			z:70,
+		});	
+		area4Text.rotation.x = -Math.PI/2;
+	};
+
+	p.createFont = function(json) {
+		let x = json.x || 0;
+		let y = json.y || 0;
+		let z = json.z || 0;
+		let color = json.color || new THREE.Color( 0xffffff );
+		let size = json.size || 10;
+		let height = json.height || 0.2;
+		let textGeo = new THREE.TextGeometry(json.text,{
+			font: this.resourcesMap['font'].result,
+			size:size,
+			height: height,
+			curveSegments: 4,
+			bevelThickness: 2,
+			bevelSize: 1.5,
+			bevelEnabled: false
+		});
+		let group = new THREE.Group();
+
+		let tM = new THREE.MeshPhongMaterial({
+			color:color
+		});
+		let mesh = new THREE.Mesh(textGeo,tM);
+		let box = new THREE.Box3();
+		box.setFromObject(mesh);
+		group.add(mesh);
+		let w = box.max.x - box.min.x;
+		let midx = (box.max.x + box.min.x)/2;
+		let midz = (box.max.z + box.min.z)/2;
+		group.position.set(midx + x - w/2,y,midz + z);
+		mesh.position.set(-midx,0,-midz);
+		group.rotation.y = json.rad || 0;
+		this.container.add(group);
+
+		return group;
 	};
 
 	p.initLineMaterial = function() {
 		// this.lineMaterial = 
 	};
 
-	p.addLine = function(s,e,color) {
-		let start = this.positionMap[s] || [0,0,0];
-		let end = this.positionMap[e] || [0,0,0];
+	p.addLine = function(s, e, color) {
+		let start = this.positionMap[s] || [0, 0, 0];
+		let end = this.positionMap[e] || [0, 0, 0];
 		let eObj = this.getMcMap(e);
 		let pos = this.getPos(start, end);
 		let curve = new THREE.QuadraticBezierCurve3(pos[0], pos[1], pos[2]);
-		
+
 		let lG = new THREE.BufferGeometry();
 		let len = 50;
 		let posAry = new Float32Array(len * 3);
 		let tAry = new Float32Array(len);
 		let j = len;
-		while(j >= 0) {
-			j --;
-			let t = j/(len-1);
+		while (j >= 0) {
+			j--;
+			let t = j / (len - 1);
 			let p = curve.getPoint(t);
-			posAry[3*j] = p.x;
-			posAry[3*j + 1] = p.y;
-			posAry[3*j + 2] = p.z;
+			posAry[3 * j] = p.x;
+			posAry[3 * j + 1] = p.y;
+			posAry[3 * j + 2] = p.z;
 			tAry[j] = t;
 		}
 		lG.addAttribute('position', new THREE.BufferAttribute(posAry, 3));
 		lG.addAttribute('tAry', new THREE.BufferAttribute(tAry, 1));
-		let lM = new THREE.ShaderMaterial( {
-			uniforms:{
-				color:{type:'t',value:new THREE.Color(color)},
-				t:{type:'f',value:-1}
+		let lM = new THREE.ShaderMaterial({
+			uniforms: {
+				color: {
+					type: 't',
+					value: new THREE.Color(color)
+				},
+				t: {
+					type: 'f',
+					value: -1
+				}
 			},
-			vertexShader:shaders.lineShader.vertexShader,
-			fragmentShader:shaders.lineShader.fragmentShader
-		} );
+			vertexShader: shaders.lineShader.vertexShader,
+			fragmentShader: shaders.lineShader.fragmentShader
+		});
 		let line = new THREE.Line(lG, lM);
 		line.computeLineDistances();
 		line.userData['curve'] = curve;
 		line.userData['lineColor'] = new THREE.Color(color);
 		this.container.add(line);
 		this.linkLineAry.push(line);
-		this.addLineParticles(line,eObj);
+		let p1 = pos[2].clone().sub(pos[0]).normalize();
+		let p2 = new THREE.Vector3( 1, 0, 0 );
+		let rad = Math.acos(p1.dot(p2));
+		if (p1.cross(p2).dot(new THREE.Vector3( 0, 1, 0 ))>0) {
+			// 判断顺时针还是逆时针
+			rad = Math.PI*2 - rad;
+		}
+		// let tGroup = this.createFont({
+		// 	text:'团队',
+		// 	color:color,
+		// 	x:pos[1].x,
+		// 	y:pos[1].y/2, 
+		// 	z:pos[1].z,
+		// 	rad:rad,
+		// });
+		this.addLineParticles(line, eObj);
 	};
 
 	// 辅助图形，正式效果时不显示
@@ -267,7 +366,7 @@ this.FTKJ = this.FTKJ || {};
 			n: 20
 		});
 		let group = axis.getGroup();
-		group.position.set(0,-12,0);
+		group.position.set(0, -12, 0);
 		this.container.add(group);
 
 	};
@@ -284,15 +383,15 @@ this.FTKJ = this.FTKJ || {};
 		this.container.add(light2);
 
 		let light3 = new THREE.PointLight(0xdce3e4, 0.33, distance);
-		light3.position.set(d * 2, h, 0);
+		light3.position.set(d, 200, 0);
 		this.container.add(light3);
 		// 
 		let light4 = new THREE.PointLight(0xdce3e4, 0.36, distance);
-		light4.position.set(-d * 2, h, 0);
+		light4.position.set(-d, 200, 0);
 		this.container.add(light4);
 		// 
 		let light5 = new THREE.PointLight(0xdce3e4, 0.34, distance);
-		light5.position.set(0, h, d);
+		light5.position.set(0, 200, d);
 		this.container.add(light5);
 		// 
 		let light6 = new THREE.PointLight(0xdce3e4, 0.36, distance);
@@ -300,7 +399,7 @@ this.FTKJ = this.FTKJ || {};
 		this.container.add(light6);
 	};
 
-	p.addLineParticles = function(line,eObj) {
+	p.addLineParticles = function(line, eObj,tGroup) {
 		let item = this.createLineParticlesItem(line);
 		this.container.add(item);
 		item.userData['cirV'] = 0.015; // 初始化速度为0
@@ -309,11 +408,14 @@ this.FTKJ = this.FTKJ || {};
 		this.lineParticlesAry.push(item);
 		let _this = this;
 		// eObj = this.getMcMap('area2_plc2');
-		new TweenMax({per:0},10,{
-			per:1,
-			onComplete:function(){
+		new TweenMax({
+			per: 0
+		}, 10, {
+			per: 1,
+			onComplete: function() {
 				_this.container.remove(item);
 				_this.container.remove(line);
+				// _this.container.remove(tGroup);
 				if (eObj) {
 					let count = eObj.userData['count'] || 0;
 					eObj.userData['count'] = --count;
@@ -321,16 +423,18 @@ this.FTKJ = this.FTKJ || {};
 						_this.setMaterialColor(eObj);
 					}
 				}
-				
+
 			}
 		});
 		if (eObj) {
 			let count = eObj.userData['count'] || 0;
-			eObj.userData['count'] = ++count;  // 记录目标值为该物体的数量，在完成时执行--操作,当值为0时,物体回到原来的颜色
-			new TweenMax({per:0},2.7,{
-				per:1,
-				onComplete:function(){
-					_this.setMaterialColor(eObj,line.userData['lineColor']);
+			eObj.userData['count'] = ++count; // 记录目标值为该物体的数量，在完成时执行--操作,当值为0时,物体回到原来的颜色
+			new TweenMax({
+				per: 0
+			}, 2.7, {
+				per: 1,
+				onComplete: function() {
+					_this.setMaterialColor(eObj, line.userData['lineColor']);
 				}
 			});
 		}
@@ -490,28 +594,6 @@ this.FTKJ = this.FTKJ || {};
 		}
 	};
 
-	p.windowClick = function(ev) {
-		this.mouse.x = ev.clientX / window.innerWidth * 2 - 1;
-		this.mouse.y = -ev.clientY / window.innerHeight * 2 + 1;
-		if (this.raycaster) {
-			this.raycaster.setFromCamera(this.mouse, this.camera);
-			let intersects = this.raycaster.intersectObjects(this.modelGroup.children);
-			if (intersects.length) {
-				// let clickObj = intersects[0].object;
-				// for (let i = 0; i < this.wireframeArr.length; i++) {
-				// 	let item = this.wireframeArr[i];
-				// 	if (item.name == clickObj.name) {
-				// 		item.userData['cT'] = 0.02;
-				// 		item.material.uniforms.t.value = 0;
-				// 		item.material.uniforms.aColor.value = new THREE.Color(0xffffff * Math.random());
-				// 	}
-				// }
-				// clickObj.visible = false;
-				// console.log(clickObj);
-			}
-		}
-	};
-
 	// 渲染时会一直调用的函数
 	p.renderFun = function() {
 		this.lineParticlesRender(); // 粒子运动渲染
@@ -531,23 +613,25 @@ this.FTKJ = this.FTKJ || {};
 		let _this = this;
 		let ePos = _this.cameraVec3;
 		let vPos = _this.camera.position;
-		let obj = {per:0};
+		let obj = {
+			per: 0
+		};
 		let cCenter = _this.controls.center;
-		this.backTween = new TweenMax(obj,3,{
-  			per:1,
-  			ease:Linear.easeNone,
-  			onUpdate:function(){
-  				_this.camera.position.x = _this.step(vPos.x,ePos.x,obj.per);
-  				_this.camera.position.y = _this.step(vPos.y,ePos.y,obj.per);
-  				_this.camera.position.z = _this.step(vPos.z,ePos.z,obj.per);
-  				_this.controls.center.x = _this.step(cCenter.x,0,obj.per);
-  				_this.controls.center.y = _this.step(cCenter.y,0,obj.per);
-  				_this.controls.center.z = _this.step(cCenter.z,0,obj.per);
+		this.backTween = new TweenMax(obj, 3, {
+			per: 1,
+			ease: Linear.easeNone,
+			onUpdate: function() {
+				_this.camera.position.x = _this.step(vPos.x, ePos.x, obj.per);
+				_this.camera.position.y = _this.step(vPos.y, ePos.y, obj.per);
+				_this.camera.position.z = _this.step(vPos.z, ePos.z, obj.per);
+				_this.controls.center.x = _this.step(cCenter.x, 0, obj.per);
+				_this.controls.center.y = _this.step(cCenter.y, 0, obj.per);
+				_this.controls.center.z = _this.step(cCenter.z, 0, obj.per);
 				_this.controls.update();
-  			},
-  			onComplete:function(){
+			},
+			onComplete: function() {
 				_this.autoTween.play();
-  			}
+			}
 		});
 
 	};
@@ -559,16 +643,9 @@ this.FTKJ = this.FTKJ || {};
 			for (let i = 0; i < json.pos.length; i++) {
 				let item = json.pos[i];
 				let newChild = child.clone();
-				// if (child.children[0].material.length === undefined) {
-				// 	let newM = child.children[0].material.clone();
-				// 	newChild.children[0].material = newM;
-				// 	newM.userData['realColor'] = newM.color;
-				// }else{
-				// 	if (modelName == 'pc1_01') {
-				// 		console.log(child.children[0]);
-				// 	}
-					newChild.userData['material'] = newChild.children[0].material;
-				// }
+				// 保存material
+				newChild.userData['material'] = newChild.children[0].material;
+
 				if (modelName == 'cylinder03') {
 					item[2] += 40;
 					item[0] += 10;
@@ -576,7 +653,7 @@ this.FTKJ = this.FTKJ || {};
 				newChild.position.set(item[0], item[1], item[2]);
 				parent.add(newChild);
 				if (!!item[3]) {
-					this.setMcMap(item[3],newChild);
+					this.setMcMap(item[3], newChild);
 				}
 			}
 		}
@@ -595,15 +672,15 @@ this.FTKJ = this.FTKJ || {};
 		return [sVec3, mVec3, eVec3];
 	};
 
-	p.step = function(s,e,t) {
-		return s + (e-s)*t;
+	p.step = function(s, e, t) {
+		return s + (e - s) * t;
 	};
 
 	p.QuadraticBezier = function() {
 
 	};
 
-	p.setMcMap = function(id,obj) {
+	p.setMcMap = function(id, obj) {
 		this.mcMap[id] = obj;
 	};
 
@@ -611,33 +688,21 @@ this.FTKJ = this.FTKJ || {};
 		return this.mcMap[id];
 	};
 
-	p.saveMaterialColor = function(obj){
+	p.saveMaterialColor = function(obj) {
 		let m = obj.children[0].material;
-		// if (m.length === undefined) {
-			// m.userData['realColor'] = m.color;
-		// }else{
-		// 	for (var i = 0; i < m.length; i++) {
-		// 		m[i].userData['realColor'] = m[i].color;
-		// 	}
-			obj.userData['material'] = m;
-		// }
+		obj.userData['material'] = m;
 	};
 
-	p.setMaterialColor = function(obj,color){
+	p.setMaterialColor = function(obj, color) {
 		let newM;
 		if (!!color) {
-			newM = new THREE.MeshPhongMaterial({color:color});
-		}else{
+			newM = new THREE.MeshPhongMaterial({
+				color: color
+			});
+		} else {
 			newM = obj.userData['material'];
 		}
 		obj.children[0].material = newM;
-		// if (m.length === undefined) {
-		// 	m.color = color || m.userData['realColor'];
-		// }else{
-		// 	for (var i = 0; i < m.length; i++) {
-		// 		m[i].color = color || m[i].userData['realColor'];
-		// 	}
-		// }
 	};
 
 	// 数组里是否有某项

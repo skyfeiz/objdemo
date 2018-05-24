@@ -10,6 +10,8 @@ this.FTKJ = this.FTKJ || {};
 		this.redLogData = []; // 保存红方日志的数据;
 		this.blueLogData = []; // 保存蓝方日志的数据;
 
+		this.sockedArr = []; // 保存socked链接
+
 		this.objNames = [];
 		for (let key in FTKJ.config.ipToPc) {
 
@@ -71,7 +73,7 @@ this.FTKJ = this.FTKJ || {};
 
 	p.test =  function() {
 		this.$leftMask.trigger('mousedown');
-	 	for (var i = 0; i < 200; i++) {
+	 	for (let i = 0; i < 20; i++) {
 	 		let json = {
 			 	'attack_type': Math.random()*4 | 0,    // 0->工控攻击  1->正在扫描	2->传统攻击(默认)
 			 	'ip_source': '192.168.2.115:42790', 		// 源IP
@@ -94,28 +96,31 @@ this.FTKJ = this.FTKJ || {};
 		let _this = this;
 		let wsHost = '192.168.1.14:8080';
 
-		this.redLogSocked = new WebSocket('ws://'+wsHost+'/admin/red_websocket/');
-		this.blueLogSocked = new WebSocket('ws://'+wsHost+'/admin/blue_websocket/');
-		this.rankingLogSocked = new WebSocket('ws://'+wsHost+'/admin/websocket/group_ranking/');
-		this.whiteLogSocked = new WebSocket('ws://'+wsHost+'/api/v1/webscoket/echo');
+		let redLogSocked = new WebSocket('ws://'+wsHost+'/admin/red_websocket/');
+		let blueLogSocked = new WebSocket('ws://'+wsHost+'/admin/blue_websocket/');
+		let rankingLogSocked = new WebSocket('ws://'+wsHost+'/admin/websocket/group_ranking/');
+		let whiteLogSocked = new WebSocket('ws://'+wsHost+'/api/v1/webscoket/echo/123');
 
-		this.redLogSocked.onmessage = function(e) {
+		redLogSocked.onmessage = function(e) {
 			// console.log('red',e.data);
 			_this.upDateRedLog(e.data);
 		};
 
-		this.blueLogSocked.onmessage = function(e) {
+		blueLogSocked.onmessage = function(e) {
 			// console.log('blue',e.data);
 			_this.upDateBlueLog(e.data);
 		};
-		this.rankingLogSocked.onmessage = function(e) {
+		rankingLogSocked.onmessage = function(e) {
 			// console.log('ranking',e.data);
 			_this.upDateRanking(e.data);
 		};
-		this.whiteLogSocked.onmessage = function(e) {
+		whiteLogSocked.onmessage = function(e) {
 			// console.log('white',e.data);
 			_this.upDateWhiteLog(e.data);
 		};
+
+		this.sockedArr.push(redLogSocked,blueLogSocked,rankingLogSocked,whiteLogSocked);
+		
 
 		this.blueAutoUpdate(); // 蓝方日志需要预先开启一个定时器。
 		this.redAutoUpdate(); // 蓝方日志需要预先开启一个定时器。
@@ -212,7 +217,7 @@ this.FTKJ = this.FTKJ || {};
 				'<span class="spanw4"><b class="flag f_red"></b>'+item.total_ques+'</span>'+
 			'</li>';
 		}
-		this.$rankingUl.html(str);
+		// this.$rankingUl.html(str);
 	};
 
 	/**
@@ -290,14 +295,7 @@ this.FTKJ = this.FTKJ || {};
 							'</li>';
 					_this.upDateLog(_this.$redLogUl,10,str,0.1);
 					_this.model.addLine(_this.ipToPc(json['ip_source']),_this.ipToPc(json['ip_destination']),cColor);
-				}	
-				// if (len > 20) {
-				// 	loopTime = 400;
-				// }else if (len > 50) {
-				// 	loopTime = 300;
-				// }else if (len > 100) {
-				// 	loopTime = 50;
-				// }
+				}
 				loop(loopTime);
 			},time);
 		}
@@ -330,8 +328,8 @@ this.FTKJ = this.FTKJ || {};
 				'<p>'+arr[2].match(_this.regJson.time)+'  '+arr[0]+' '+arr[1]+'</p>'+
 			'</li>';
 			_this.$num5.html(_this.$num5.html()*1 + 1);
-			_this.upDateLog(_this.$blueLogUl,10,str,0.5);
-		},1000);
+			_this.upDateLog(_this.$blueLogUl,10,str,0.3);
+		},500);
 	};
 
 	p.initEvent = function() {
@@ -341,11 +339,14 @@ this.FTKJ = this.FTKJ || {};
 			for (let i = 0; i < _this.myCharts.length; i++) {
 				_this.myCharts[i].resize();
 			}
+			for (var i = 0; i < _this.sockedArr.length; i++) {
+				_this.sockedArr[i].close();
+			}
 		});
 		let timer = null;
 
 		// 3D空间物体放大缩小,移动视角时，3D模型自转停止，用户无操作时，等待5秒，视角缩放回复到最初位置继续自转
-		$(window).on('mousewheel',function(){
+		$(window).on('scroll,mousewheel',function(){
 			_this.model.pause();
 			clearTimeout(timer);
 			timer = setTimeout(function(){
@@ -367,7 +368,15 @@ this.FTKJ = this.FTKJ || {};
 			},5000);
 		});
 
+		// 页面关闭时 断开 socked 连接
+		$(window).on('beforeunload',function(){
+			for (let i = 0; i < _this.sockedArr.length; i++) {
+				_this.sockedArr[i].send('close');
+				_this.sockedArr[i].close();
+			}
+		});	
 
+		//	因为要阻止上面定义的window的mousedown事件，所以这里用mousedown事件
 		this.$leftMask.mousedown(function(ev) {
 			ev.stopPropagation();
 			let isShow = $(this).data('isShow');
@@ -456,6 +465,7 @@ this.FTKJ = this.FTKJ || {};
 		ip = ip.split(':')[0];
 		let name = FTKJ.config.ipToPc[ip];
 		if (name === undefined) {
+			// 没有匹配到name 则去随机的位置。
 			name = this.objNames[Math.random()*(this.objNames.length-1) | 0];
 		}
 		return name;
