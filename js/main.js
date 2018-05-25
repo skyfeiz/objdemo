@@ -73,12 +73,12 @@ this.FTKJ = this.FTKJ || {};
 
 	p.test =  function() {
 		this.$leftMask.trigger('mousedown');
-	 	for (let i = 0; i < 20; i++) {
+	 	for (let i = 0; i < 100; i++) {
 	 		let json = {
 			 	'attack_type': Math.random()*4 | 0,    // 0->工控攻击  1->正在扫描	2->传统攻击(默认)
 			 	'ip_source': '192.168.2.115:42790', 		// 源IP
-			 	'ip_destination': '192.168.1s.12',  // 目标IP
-			 	// 'ip_destination': '192.168.s3.13',  // 目标IP
+			 	'ip_destination': '192.168.s1.12',  // 目标IP
+			 	// 'ip_destination': '172.25.s21.101',  // 目标IP
 			 	'time': 'May-8-23:13:04' 	// 时间 ，取时分秒。
 		 	};
 	 		this.redLogData.push(json);
@@ -273,15 +273,16 @@ this.FTKJ = this.FTKJ || {};
 				let json = _this.redLogData.shift();
 				let loopTime = 100;
 				if (json) {
+					let aType = json['attack_type'];
 					let cName = 'c_blue';
 					let cColor = '#2896ff';
 					let sName = '传统攻击';
-					if (json['attack_type'] == 0) {
+					if (aType == 0) {
 						cName = 'c_red';
 						sName = '工控攻击';
 						cColor = '#02c096';
 						_this.$num3.html(_this.$num3.html()*1 + 1);
-					}else if (json['attack_type'] == 1) {
+					}else if (aType == 1) {
 						cName = 'c_yellow';
 						sName = '正在扫描';
 						cColor = '#ffaf15';
@@ -294,7 +295,7 @@ this.FTKJ = this.FTKJ || {};
 								'<p>'+json['time'].split('-')[2]+'  '+json['ip_source']+' -> '+json['ip_destination']+'</p>'+
 							'</li>';
 					_this.upDateLog(_this.$redLogUl,10,str,0.1);
-					_this.model.addLine(_this.ipToPc(json['ip_source']),_this.ipToPc(json['ip_destination']),cColor);
+					_this.model.addLine(_this.ipToPc(json['ip_source']),_this.ipToPc(json['ip_destination']),cColor,aType);
 				}
 				loop(loopTime);
 			},time);

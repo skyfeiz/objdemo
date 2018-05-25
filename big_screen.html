@@ -3,23 +3,23 @@
 <head>
 	<meta charset="UTF-8">
 	<title>screen</title>
-	<link rel="stylesheet" href="css/screen.css" />
-	<script src="lib/jquery.min.js"></script>
-	<script src="lib/three.min.js"></script>
-	<script src="lib/OBJLoader.js"></script>
-	<script src="lib/MTLLoader.js"></script>
-	<script src="lib/OrbitControls.js"></script>
-	<script src="lib/stats.min.js"></script>
-	<script src="lib/ThreeGroupLoader.js"></script>
-	<script src="lib/ThreeBase.js"></script>
-	<script src="lib/echarts.min.js"></script>
-	<script src="lib/TweenMax.js"></script>
-	<script src="config/config.js"></script>
-	<script src="js/posMap.js"></script>
-	<script src="js/axis.js"></script>
-	<script src="js/shaders.js"></script>
-	<script src="js/model.js"></script>
-	<script src="js/main.js"></script>
+	<link rel="stylesheet" href="/static/big_screen/css/screen.css" />
+	<script src="/static/big_screen/lib/jquery.min.js"></script>
+	<script src="/static/big_screen/lib/three.min.js"></script>
+	<script src="/static/big_screen/lib/OBJLoader.js"></script>
+	<script src="/static/big_screen/lib/MTLLoader.js"></script>
+	<script src="/static/big_screen/lib/OrbitControls.js"></script>
+	<script src="/static/big_screen/lib/stats.min.js"></script>
+	<script src="/static/big_screen/lib/ThreeGroupLoader.js"></script>
+	<script src="/static/big_screen/lib/ThreeBase.js"></script>
+	<script src="/static/big_screen/lib/echarts.min.js"></script>
+	<script src="/static/big_screen/lib/TweenMax.js"></script>
+	<script src="/static/big_screen/config/config.js"></script>
+	<script src="/static/big_screen/js/posMap.js"></script>
+	<script src="/static/big_screen/js/axis.js"></script>
+	<script src="/static/big_screen/js/shaders.js"></script>
+	<script src="/static/big_screen/js/model.js"></script>
+	<script src="/static/big_screen/js/main.js"></script>
 	<script>
 		console.warn = function(){
 
@@ -29,12 +29,12 @@
 			stats.domElement.style.position = 'absolute';
 			stats.domElement.style.left = '0px';
 			stats.domElement.style.top = '0px';
-			// document.body.appendChild(stats.domElement);
+			document.body.appendChild(stats.domElement);
 			var main = new FTKJ.Main($('#container3D')[0]);
 			render();
 			function render() {
 				main.render();
-				// stats.update();
+				stats.update();
 				requestAnimationFrame(render);
 			}
 		});
@@ -301,58 +301,6 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- <div class="m_left1 m_right2" id="whiteSys">
-			<div class="bgbar">
-				<span class="triangle"></span>
-			</div>
-			<div class="title v_middle">
-				<p>白方日志</p>
-				<span class="up_arrow"></span>
-			</div>
-
-			<div class="content">
-				<div class="m_right2_chart" id="m_right2_chart"></div>
-				<div class="posdiv">
-					<div class="limitdiv">
-						<ul class="limitul">
-							<li class="limitli c_green">
-								<span>PLC告警</span>
-								<p>14:57:25  八一队攻破XXX赛题</p>
-							</li>
-							<li class="limitli c_yellow">
-								<span>工控告警</span>
-								<p>14:57:25  监测到针对PLC的命令改写</p>
-							</li>
-							<li class="limitli c_blue2">
-								<span>报警监测</span>
-								<p>14:57:25  八一队攻破XXX赛题</p>
-							</li>
-							<li class="limitli c_blue2">
-								<span>报警监测</span>
-								<p>14:57:25  八一队攻破XXX赛题</p>
-							</li>
-							<li class="limitli c_green">
-								<span>PLC告警</span>
-								<p>14:57:25  八一队攻破XXX赛题</p>
-							</li>
-							<li class="limitli c_yellow">
-								<span>PLC告警</span>
-								<p>14:57:25  监测到针对PLC的命令改写</p>
-							</li>
-							<li class="limitli c_blue3">
-								<span>PLC告警</span>
-								<p>14:57:25  监测到针对PLC的命令改写</p>
-							</li>
-							<li class="limitli c_yellow">
-								<span>PLC告警</span>
-								<p>14:57:25  监测到针对PLC的命令改写</p>
-							</li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div> -->
 	</div>
 </body>
 </html>

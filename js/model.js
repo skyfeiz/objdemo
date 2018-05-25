@@ -1,7 +1,7 @@
 /* globals shaders,TweenMax,Linear */
 
 /**
- *
+ * 整个模型的加载，包括某些模型的克隆，场景中生成连线，以及相应的特效
  */
 this.FTKJ = this.FTKJ || {};
 (function() {
@@ -20,7 +20,7 @@ this.FTKJ = this.FTKJ || {};
 		// 当资源加载完成后会自动调用initObject3D方法。
 		// mtl 类型，会加载两个文件，url+.mtl 和 url+.obj
 		let testPath = './';
-		// let testPath = '/static/big_screen/';
+		testPath = '/static/big_screen/';
 		let array = [
 			{id: 'spark', type: 'texture', url: testPath + 'imgs/spark.png'}, 
 			{id: 'smoke', type: 'texture', url: testPath + 'imgs/smokeparticle.png'}, 
@@ -48,9 +48,11 @@ this.FTKJ = this.FTKJ || {};
 
 		this.lineParticlesAry = []; // 保存每个连线所有粒子的数组
 
-		this.wireframeArr = []; // 保存线框对象的数组
+		this.wireframeArr = []; // 	保存线框对象的数组
 
-		this.autoTween = null;
+		this.wireFrameCache = {};	//	线框对象的缓存
+
+		this.autoTween = null;	//	保存tweenMax对象
 
 		this.objPosArr = FTKJ.posMap.objPosArr;
 
@@ -63,8 +65,8 @@ this.FTKJ = this.FTKJ || {};
 	 * 场景初始化完成，资源加载完成会自动调用的函数
 	 */
 	p.initObject3D = function() {
-		this.controls.maxDistance = 1000;
-		this.controls.enableKeys = false;
+		this.controls.maxDistance = 1000;	// 	限制鼠标缩放的最远距离
+		this.controls.enableKeys = false;	//	取消键盘控制
 		// this.camera.position.set(408 + 3000, 292 + 3000, 190 + 3000);
 		this.cameraVec3 = new THREE.Vector3(408, 292, 190);
 		this.camera.position.set(this.cameraVec3.x, this.cameraVec3.y, this.cameraVec3.z);
@@ -222,6 +224,7 @@ this.FTKJ = this.FTKJ || {};
 		this.modelReady();
 	};
 
+	// 给每个区域添加名称
 	p.initAreaName = function() {
 		let area1Text = this.createFont({
 			text:'监控区',
@@ -255,6 +258,36 @@ this.FTKJ = this.FTKJ || {};
 		area4Text.rotation.x = -Math.PI/2;
 	};
 
+	// 创建线框对象，需要建立缓存，不重复创建。
+	p.createWireframeObj = function(obj,color) {
+		if (!obj) {return ;}
+		if (this.wireFrameCache[obj.uuid] !== undefined) {
+			return this.wireFrameCache[obj.uuid];
+		}else{
+			let cloneObj = obj.clone();
+			let mesh = cloneObj.children[0];
+			let box = new THREE.Box3().setFromObject(cloneObj);
+			// console.log(box);
+			let material = new THREE.ShaderMaterial({
+				uniforms:{
+					t:{value:-0.5},
+					yMax:{value:box.max.y},
+					yMin:{value:box.min.y},
+					aColor:{value:new THREE.Color(color)}
+				},
+				vertexShader:shaders.wireframeShader.vertexShader,
+				fragmentShader:shaders.wireframeShader.fragmentShader,
+				transparent:true,
+			});
+			mesh.material = material;
+			mesh.userData['cT'] = 0;
+			this.wireframeArr.push(mesh);
+			this.wireFrameCache[obj.uuid] = mesh;
+			obj.parent.add(cloneObj);
+		}
+	};
+
+	// 生成文字
 	p.createFont = function(json) {
 		let x = json.x || 0;
 		let y = json.y || 0;
@@ -295,7 +328,7 @@ this.FTKJ = this.FTKJ || {};
 		// this.lineMaterial = 
 	};
 
-	p.addLine = function(s, e, color) {
+	p.addLine = function(s, e, color,aType) {
 		let start = this.positionMap[s] || [0, 0, 0];
 		let end = this.positionMap[e] || [0, 0, 0];
 		let eObj = this.getMcMap(e);
@@ -353,7 +386,8 @@ this.FTKJ = this.FTKJ || {};
 		// 	z:pos[1].z,
 		// 	rad:rad,
 		// });
-		this.addLineParticles(line, eObj);
+		this.createWireframeObj(eObj,color);
+		this.addLineParticles(line, eObj,aType);
 	};
 
 	// 辅助图形，正式效果时不显示
@@ -399,7 +433,7 @@ this.FTKJ = this.FTKJ || {};
 		this.container.add(light6);
 	};
 
-	p.addLineParticles = function(line, eObj,tGroup) {
+	p.addLineParticles = function(line, eObj,aType,tGroup) {
 		let item = this.createLineParticlesItem(line);
 		this.container.add(item);
 		item.userData['cirV'] = 0.015; // 初始化速度为0
@@ -421,9 +455,9 @@ this.FTKJ = this.FTKJ || {};
 					eObj.userData['count'] = --count;
 					if (eObj && eObj.children[0].material.userData && count == 0) {
 						_this.setMaterialColor(eObj);
+						_this.endWireframeAni(_this.wireFrameCache[eObj.uuid]);
 					}
 				}
-
 			}
 		});
 		if (eObj) {
@@ -435,6 +469,7 @@ this.FTKJ = this.FTKJ || {};
 				per: 1,
 				onComplete: function() {
 					_this.setMaterialColor(eObj, line.userData['lineColor']);
+					_this.startWireframeAni(_this.wireFrameCache[eObj.uuid],line.userData['lineColor'],aType);
 				}
 			});
 		}
@@ -522,18 +557,18 @@ this.FTKJ = this.FTKJ || {};
 	};
 
 	p.wireframeRender = function() {
-		let type = 'downToUp'; // back ， downToUp
 		for (let i = 0; i < this.wireframeArr.length; i++) {
 			let item = this.wireframeArr[i];
 			let cT = item.userData['cT']; // 移动速度
 			let dirDown = item.userData['dirDown'];
+			let aType = item.userData['aType'] || 'downToUp';
 			let tValue = item.material.uniforms.t.value;
-			if (type == 'downToUp') { // 从下到上循环
+			if (aType == 'downToUp') { // 从下到上循环
 				item.material.uniforms.t.value += cT;
 				if (tValue >= 1.5) {
 					item.material.uniforms.t.value = -0.5;
 				}
-			} else if (type == 'back') { // 上下往返循环
+			} else if (aType == 'back') { // 上下往返循环
 				if (!dirDown) {
 					item.material.uniforms.t.value += cT;
 					if (tValue >= 1) {
@@ -578,20 +613,21 @@ this.FTKJ = this.FTKJ || {};
 		lineParticlesItem.geometry.attributes.aOpacity.needsUpdate = true;
 	};
 
-	p.change = function() {
-		for (let i = 0; i < this.lineParticlesAry.length; i++) {
-			let item = this.lineParticlesAry[i];
-			let v = item.userData['cirV'];
-			let perOld = item.geometry.attributes.perOld.array.slice(0);
-			if (v == 0) {
-				item.userData['cirV'] = 0.015;
-				item.userData['opacity'] = 0.5;
-				item.geometry.attributes.per.array = perOld; // 粒子回到初始位置。
-			} else {
-				item.userData['cirV'] = 0; // 粒子取消运动 运动速度为0
-				item.userData['opacity'] = 0; // 粒子不可见
-			}
+	p.startWireframeAni = function(item,color,aType) {
+		if (aType == 1) {  //0  工控攻击 1 扫描  2 传统攻击
+ 			item.userData['aType'] = 'back';
+		}else{
+			item.userData['aType'] = 'downToUp';
 		}
+		item.visible = true;
+		item.userData['cT'] = 0.04;
+		item.material.uniforms.t.value = 0;
+		item.material.uniforms.aColor.value = new THREE.Color(color);
+	};
+
+	p.endWireframeAni = function(item) {
+		item.userData['cT'] = 0;
+		item.visible = false;
 	};
 
 	// 渲染时会一直调用的函数
@@ -674,10 +710,6 @@ this.FTKJ = this.FTKJ || {};
 
 	p.step = function(s, e, t) {
 		return s + (e - s) * t;
-	};
-
-	p.QuadraticBezier = function() {
-
 	};
 
 	p.setMcMap = function(id, obj) {
