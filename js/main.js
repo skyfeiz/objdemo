@@ -12,6 +12,8 @@ this.FTKJ = this.FTKJ || {};
 
 		this.sockedArr = []; // 保存socked链接
 
+		this.rankingMap = {}; // 保存队伍排名
+
 		this.objNames = [];
 		for (let key in FTKJ.config.ipToPc) {
 
@@ -25,8 +27,9 @@ this.FTKJ = this.FTKJ || {};
 
 		let _this = this;
 
+		this.init();
 		this.model.modelReady = function(){
-			_this.init();
+			// _this.init();
 		};
 	};
 
@@ -72,7 +75,7 @@ this.FTKJ = this.FTKJ || {};
 	};
 
 	p.test =  function() {
-		this.$leftMask.trigger('mousedown');
+		/*this.$leftMask.trigger('mousedown');
 	 	for (let i = 0; i < 100; i++) {
 	 		let json = {
 			 	'attack_type': Math.random()*4 | 0,    // 0->工控攻击  1->正在扫描	2->传统攻击(默认)
@@ -82,8 +85,29 @@ this.FTKJ = this.FTKJ || {};
 			 	'time': 'May-8-23:13:04' 	// 时间 ，取时分秒。
 		 	};
 	 		this.redLogData.push(json);
-	 	}
+	 	}*/
 
+	 	let _this = this;
+	 	let rankingData = [];
+	 	for (let i = 0; i < 10; i++) {
+	 		rankingData.push({
+			 	group_info:{id:200+i,name:'瑞气十足'+i},
+			 	total_ques:this.rnd(2,10),
+			 	total_score:220-10*i
+		 	});
+	 	}
+	 	// setTimeout(function() {
+	 	setInterval(function() {
+	 		let rnd = _this.rnd(0,rankingData.length-1);
+	 		rankingData[rnd].total_score = _this.rnd(100,500);
+	 		rankingData[rnd].total_ques = _this.rnd(2,10);
+	 		rankingData.sort(function(n1,n2){
+	 			return n2.total_score - n1.total_score;
+	 		});
+	 		_this.upDateRanking(rankingData);
+
+	 	},1000);
+	 	this.upDateRanking(rankingData);
 		// this.model.addLine(this.ipToPc('2132'),this.ipToPc('123132'));
 		// this.model.addLine('area4_pc_A1_1','area2_plc4');
 		// this.model.addLine('area4_pc_B1_7','area2_plc6');
@@ -112,7 +136,7 @@ this.FTKJ = this.FTKJ || {};
 		};
 		rankingLogSocked.onmessage = function(e) {
 			// console.log('ranking',e.data);
-			_this.upDateRanking(e.data);
+			// _this.upDateRanking(e.data);
 		};
 		whiteLogSocked.onmessage = function(e) {
 			// console.log('white',e.data);
@@ -201,23 +225,60 @@ this.FTKJ = this.FTKJ || {};
 	 * 	total_ques:5,
 	 * 	total_score:220
 	 * }]
+	 * 队伍第一次上榜，新增dom.
+	 * 名次变化，移动变化的dom
 	 */
 	p.upDateRanking = function(arr) {
 		if (typeof arr == 'string') {
 			arr = eval('('+arr+')');
 		}
 		let str = '';
-		for (let i = 1; i <= arr.length-1; i++) {
+		let $lis = this.$rankingUl.find('li');  // 获取所有的li
+		for (let i = 0; i < arr.length; i++) {
 			if (i >= 14) {break;}
 			let item = arr[i];
-			str += '<li class="limitli v_middle">'+
-				'<span class="spanw1">'+i+'</span>'+
-				'<span class="spanw2">'+item.group_info.name+'</span>'+
-				'<span class="spanw3">'+item.total_score+'</span>'+
-				'<span class="spanw4"><b class="flag f_red"></b>'+item.total_ques+'</span>'+
-			'</li>';
+			let rObj = this.rankingMap[item.group_info.id];
+			if (rObj !== undefined) { 	// 改变li的内容和 class
+				let $li = $lis.eq(rObj.index);
+				$li.attr('class','limitli v_middle rankingli'+(i+1));
+				$li.find('.spanw1').html(i+1);
+				$li.find('.spanw2').html(item.group_info.name);
+				this.animateNum($li.find('.spanw3'),item.total_score,1);
+				let oldQues = rObj.ques;
+				let $lispan4 = $li.find('.spanw4');
+				$lispan4.html('<b class="flag f_red"></b><b class="flag_num">'+item.total_ques+'</b>');
+				if (item.total_ques > oldQues) {
+					let $b = $lispan4.find('.flagadd');
+					if (!$b[0]) {
+						$b = $('<b class="flagadd"></b>');
+						$lispan4.append($b);
+					}
+					$b.html('+'+(item.total_ques - oldQues));
+					$b.data('tween') && $b.data('tween').kill();
+					$b.data('tween',new TweenMax($b,1,{
+						opacity:1,
+						onComplete:function(){
+							new TweenMax($b,0.5,{
+								opacity:0
+							});
+							rObj.ques = item.total_ques;
+						}
+					}));
+				}
+			}else{	// 添加li
+				str = '<li class="limitli v_middle rankingli'+(i+1)+'">'+
+					'<span class="spanw1">'+(i+1)+'</span>'+
+					'<span class="spanw2">'+item.group_info.name+'</span>'+
+					'<span class="spanw3">'+item.total_score+'</span>'+
+					'<span class="spanw4"><b class="flag f_red"></b><b class="flag_num">'+item.total_ques+'</b></span>'+
+				'</li>';
+				this.$rankingUl.append(str);
+				this.rankingMap[item.group_info.id] = {
+					index:i,
+					ques:item.total_ques
+				};
+			}
 		}
-		// this.$rankingUl.html(str);
 	};
 
 	/**
@@ -460,6 +521,34 @@ this.FTKJ = this.FTKJ || {};
 			myChart.setOption(option);
 			_this.myCharts.push(myChart);
 		});
+	};
+
+	/**
+	 * 数字自动运动
+	 * @param  {[$dom]} $dom [数字的dom容器]
+	 * @param  {[number]} e    [目标值]
+	 * @param  {[number]} duration [运动时间]
+	 * @param  {[function]} fn [中间函数]
+	 */
+	p.animateNum = function($dom,e,duration,fn) {
+		e *= 1;
+		duration = duration || 1;
+		let obj = {per:0};
+		let _this = this;
+		let s = $dom.html()*1 || 0;
+		new TweenMax(obj,duration,{
+			per:1,
+			ease:Linear.easeNone,
+			onUpdate:function() {
+				let num = Math.round(_this.step(s,e,obj.per));
+				$dom.html(num);
+				fn && fn(num);
+			}
+		});
+	};
+
+	p.rnd = function(n,m) {
+		return Math.round(Math.random()*(m-n) +n);
 	};
 
 	p.ipToPc = function(ip){

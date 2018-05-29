@@ -26,6 +26,9 @@ html{
 	font-family: 'Source Hei';
 	min-height: 900px;
 }
+body{
+	font-size: 0.12rem;
+}
 .dnone{
 	display: none;
 }
@@ -455,9 +458,55 @@ html{
 .m_left2 .con_list .limitul{
 	font-size: 0;
 	height: 100%;
+	position: relative;
 }
 .m_left2 .con_list .limitli{
 	height: 6.53%;  /* 34 / 564 / 0.9315 */
+	position: absolute;
+	left: 0;
+	transition: 1s all ease;
+}
+.m_left2 .con_list .rankingli1{
+	top:0;
+}
+.m_left2 .con_list .rankingli2{
+	top:calc(6.53% * 1);
+}
+.m_left2 .con_list .rankingli3{
+	top:calc(6.53% * 2);
+}
+.m_left2 .con_list .rankingli4{
+	top:calc(6.53% * 3);
+}
+.m_left2 .con_list .rankingli5{
+	top:calc(6.53% * 4);
+}
+.m_left2 .con_list .rankingli6{
+	top:calc(6.53% * 5);
+}
+.m_left2 .con_list .rankingli7{
+	top:calc(6.53% * 6);
+}
+.m_left2 .con_list .rankingli8{
+	top:calc(6.53% * 7);
+}
+.m_left2 .con_list .rankingli9{
+	top:calc(6.53% * 8);
+}
+.m_left2 .con_list .rankingli10{
+	top:calc(6.53% * 9);
+}
+.m_left2 .con_list .rankingli11{
+	top:calc(6.53% * 10);
+}
+.m_left2 .con_list .rankingli12{
+	top:calc(6.53% * 11);
+}
+.m_left2 .con_list .rankingli13{
+	top:calc(6.53% * 12);
+}
+.m_left2 .con_list .rankingli14{
+	top:calc(6.53% * 13);
 }
 .m_left2 .con_list .limitli span{
 	vertical-align: middle;
@@ -553,7 +602,12 @@ html{
 	height: 100%;
 }
 
-
+.con_list .flagadd{
+	position: absolute;
+	right: 0;
+	font-size: 0.12rem;
+	opacity: 0;
+}
 
 
 

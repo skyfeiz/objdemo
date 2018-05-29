@@ -7,7 +7,7 @@ this.FTKJ = this.FTKJ || {};
 (function() {
 	function Model(json) {
 		FTKJ.ThreeBase.call(this, json.dom);
-		this.init();
+		// this.init();
 	}
 
 	let p = Model.prototype = Object.create(FTKJ.ThreeBase.prototype);
@@ -15,7 +15,7 @@ this.FTKJ = this.FTKJ || {};
 
 	p.init = function() {
 		this.canOrbit = true;
-		// this.controls.maxDistance = 1000;
+		
 		// 加载预定的资源，加载后的资源会放在this.resourcesMap里面，通过id访问 
 		// 当资源加载完成后会自动调用initObject3D方法。
 		// mtl 类型，会加载两个文件，url+.mtl 和 url+.obj
