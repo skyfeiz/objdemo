@@ -7,7 +7,7 @@ this.FTKJ = this.FTKJ || {};
 (function() {
 	function Model(json) {
 		FTKJ.ThreeBase.call(this, json.dom);
-		// this.init();
+		this.init();
 	}
 
 	let p = Model.prototype = Object.create(FTKJ.ThreeBase.prototype);
@@ -50,6 +50,8 @@ this.FTKJ = this.FTKJ || {};
 
 		this.wireframeArr = []; // 	保存线框对象的数组
 
+		this.smokeArr = []; // 保存烟雾对象
+
 		this.wireFrameCache = {};	//	线框对象的缓存
 
 		this.autoTween = null;	//	保存tweenMax对象
@@ -88,6 +90,7 @@ this.FTKJ = this.FTKJ || {};
 		let boxMesh = new THREE.Mesh(boxG, boxM);
 		boxMesh.position.y = -20;
 		this.container.add(boxMesh);
+
 
 		let modelGroup = new THREE.Group();
 		// 模型过大，设置一定的缩放比例
@@ -150,6 +153,8 @@ this.FTKJ = this.FTKJ || {};
 					this.setMcMap('area3_server_B1', result);
 				} else if (item == 'server4_02') {
 					this.setMcMap('area3_server_A1', result);
+				}else if (item == 'chimney') {
+					result.children[0].material.depthTest = true;
 				}
 
 				this.saveMaterialColor(result);
@@ -221,6 +226,11 @@ this.FTKJ = this.FTKJ || {};
 
 		this.initAreaName();
 
+		this.addSmoke(195,20,10);
+		this.addSmoke(195,20,50);
+		this.addSmoke(198,20,-30);
+		this.addSmoke(165,20,-50);
+
 		this.modelReady();
 	};
 
@@ -243,7 +253,7 @@ this.FTKJ = this.FTKJ || {};
 		area2Text.rotation.z = Math.PI/2;
 
 		let area3Text = this.createFont({
-			text:'服务器区',
+			text:'攻击区',
 			y:-12,
 			x:-65,
 		});	
@@ -251,7 +261,7 @@ this.FTKJ = this.FTKJ || {};
 		area3Text.rotation.z = -Math.PI/2;
 
 		let area4Text = this.createFont({
-			text:'攻击区',
+			text:'服务器区',
 			y:-12,
 			z:70,
 		});	
@@ -322,6 +332,51 @@ this.FTKJ = this.FTKJ || {};
 		this.container.add(group);
 
 		return group;
+	};
+
+	p.addSmoke = function(x,y,z) {
+		let smokeGeometry = new THREE.BufferGeometry();
+		let len = 200;
+		let posAry = new Float32Array(len * 3);
+		let dirAry = new Float32Array(len * 3);
+		let sizeAry = new Float32Array(len);
+		let opacityAry = new Float32Array(len);
+		let i = len;
+		let sizeBase = 40;
+		while(i >= 0) {
+			i--;
+			posAry[3*i] = 0;
+			posAry[3*i+1] = this.rnd(-100,0);
+			posAry[3*i+2] = 0;
+			dirAry[3*i] = 0;  // 速度
+			dirAry[3*i+1] = 0;	// x角度
+			dirAry[3*i+2] = 0;	// z角度
+			sizeAry[i] = sizeBase * window.devicePixelRatio;
+			opacityAry[i] = 1;
+		}
+		smokeGeometry.addAttribute('position',new THREE.BufferAttribute(posAry,3));
+		smokeGeometry.addAttribute('dir',new THREE.BufferAttribute(dirAry,3));
+		smokeGeometry.addAttribute('size',new THREE.BufferAttribute(sizeAry,1));
+		smokeGeometry.addAttribute('aOpacity',new THREE.BufferAttribute(opacityAry,1));
+		let smokeMaterial = new THREE.ShaderMaterial({
+			uniforms:{
+				texture: {
+					type: 't',
+					value: this.resourcesMap['smoke'].result
+				},
+			},
+			vertexShader:shaders.smokeShader.vertexShader,
+			fragmentShader:shaders.smokeShader.fragmentShader,
+			transparent:true,
+			depthTest:false
+		});
+		let points = new THREE.Points(smokeGeometry,smokeMaterial);
+		this.smokeArr.push(points);
+		points.position.x = x;
+		points.position.y = y;
+		points.position.z = z;
+		this.container.add(points);
+		return points;
 	};
 
 	p.initLineMaterial = function() {
@@ -476,7 +531,6 @@ this.FTKJ = this.FTKJ || {};
 	};
 
 	p.initParticleMaterial = function() {
-		let texture = this.resourcesMap['spark'].result;
 		this.particleMaterial = new THREE.ShaderMaterial({
 			uniforms: {
 				opacity: {
@@ -485,7 +539,7 @@ this.FTKJ = this.FTKJ || {};
 				}, // 最大的透明度
 				texture: {
 					type: 't',
-					value: texture
+					value: this.resourcesMap['spark'].result
 				},
 			},
 			vertexShader: shaders.pointShader.vertexShader,
@@ -584,6 +638,63 @@ this.FTKJ = this.FTKJ || {};
 		}
 	};
 
+	p.smokeRender = function() {
+		let _this = this;
+		for (let i = 0; i < this.smokeArr.length; i++) {
+			let item = this.smokeArr[i];
+			let positionAry = item.geometry.attributes.position.array;
+			let dirAry = item.geometry.attributes.dir.array;
+			let opacityAry = item.geometry.attributes.aOpacity.array;
+			let sizeAry = item.geometry.attributes.size.array;
+			let j = opacityAry.length;
+			let j3 = 3*j;
+			let maxH = 100;
+			let sizeBase = 40;
+			while(j > 0) {
+				j--;
+				j3 -=3;
+				// 随机向上的角度
+				let speed = dirAry[j3];
+				if (speed <= 0) { // 没有速度 随机一个速度
+					speed = _this.rnd(0.001,0.01);
+					dirAry[j3] = speed;
+				}
+				let dirX = dirAry[j3 + 1];
+				if (dirX === 0) {
+					dirX = _this.rnd(-0.2,0.2);
+					dirAry[j3 + 1] = dirX;
+				}
+				let dirY = dirAry[j3 + 2];
+				if (dirY === 0) {
+					dirY = _this.rnd(-0.2,0.2);
+					dirAry[j3 + 2] = dirY;
+				}
+				let y = positionAry[j3 + 1] + maxH*speed;
+				if (y >= maxH) {  // 粒子上升到最高点时重置粒子
+					dirAry[j3 + 1] = 0;
+					dirAry[j3 + 2] = 0;
+					positionAry[j3] = 0;
+					positionAry[j3 + 2] = 0;
+				}
+				y %= maxH;
+					positionAry[j3 + 1] = y;
+				if (y >= 0) {
+					positionAry[j3] += maxH*speed*Math.sin(dirX);
+					positionAry[j3 + 2] += maxH*speed*Math.sin(dirY);
+					sizeAry[j] = sizeBase * window.devicePixelRatio * (0.2 + 0.8*y/maxH);
+					opacityAry[j] = 1 - y/maxH;
+				}else{
+					sizeAry[j] = 0;
+					opacityAry[j] = 0;
+				}
+			}
+			item.geometry.attributes.position.needsUpdate = true;
+			item.geometry.attributes.dir.needsUpdate = true;
+			item.geometry.attributes.aOpacity.needsUpdate = true;
+			item.geometry.attributes.size.needsUpdate = true;
+		}
+	};
+
 	p.lineParticlesItemRender = function(lineParticlesItem) {
 		let curve = lineParticlesItem.userData['curve'];
 		let cirV = lineParticlesItem.userData['cirV'];
@@ -634,6 +745,7 @@ this.FTKJ = this.FTKJ || {};
 	p.renderFun = function() {
 		this.lineParticlesRender(); // 粒子运动渲染
 		this.wireframeRender(); // 建筑外线框运动渲染
+		this.smokeRender(); // 烟雾运动渲染
 	};
 
 	// 暂停，表示有用户操作。
@@ -749,6 +861,10 @@ this.FTKJ = this.FTKJ || {};
 			}
 			return false;
 		}
+	};
+
+	p.rnd = function(n,m) {
+		return Math.random()*(m-n) + n;
 	};
 
 	FTKJ.Model = Model;

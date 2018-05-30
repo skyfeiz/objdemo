@@ -46,7 +46,6 @@ this.FTKJ = this.FTKJ || {};
 		this.test();
 	};
 
-
 	p.initDom = function() {
 		this.$chartdom = $('.chartdom'); // middle 五个圆
 		this.$right2chart = $('#m_right2_chart'); // right2 柱图
@@ -75,39 +74,39 @@ this.FTKJ = this.FTKJ || {};
 	};
 
 	p.test =  function() {
-		/*this.$leftMask.trigger('mousedown');
-	 	for (let i = 0; i < 100; i++) {
-	 		let json = {
-			 	'attack_type': Math.random()*4 | 0,    // 0->工控攻击  1->正在扫描	2->传统攻击(默认)
-			 	'ip_source': '192.168.2.115:42790', 		// 源IP
-			 	'ip_destination': '192.168.s1.12',  // 目标IP
-			 	// 'ip_destination': '172.25.s21.101',  // 目标IP
-			 	'time': 'May-8-23:13:04' 	// 时间 ，取时分秒。
-		 	};
-	 		this.redLogData.push(json);
-	 	}*/
+		this.$leftMask.trigger('mousedown');
+	 	// for (let i = 0; i < 100; i++) {
+	 	// 	let json = {
+			//  	'attack_type': Math.random()*4 | 0,    // 0->工控攻击  1->正在扫描	2->传统攻击(默认)
+			//  	'ip_source': '192.168.2.115:42790', 		// 源IP
+			//  	'ip_destination': '192.168.s1.12',  // 目标IP
+			//  	// 'ip_destination': '172.25.s21.101',  // 目标IP
+			//  	'time': 'May-8-23:13:04' 	// 时间 ，取时分秒。
+		 // 	};
+	 	// 	this.redLogData.push(json);
+	 	// }
 
 	 	let _this = this;
 	 	let rankingData = [];
 	 	for (let i = 0; i < 10; i++) {
 	 		rankingData.push({
-			 	group_info:{id:200+i,name:'瑞气十足'+i},
-			 	total_ques:this.rnd(2,10),
-			 	total_score:220-10*i
+			 	group_info : {id:200+i,name:'瑞气十足'+i},
+			 	total_ques : this.rnd(2,10),
+			 	total_score : 220-10*i
 		 	});
 	 	}
 	 	// setTimeout(function() {
-	 	setInterval(function() {
+	 	/*setInterval(function() {
 	 		let rnd = _this.rnd(0,rankingData.length-1);
 	 		rankingData[rnd].total_score = _this.rnd(100,500);
 	 		rankingData[rnd].total_ques = _this.rnd(2,10);
 	 		rankingData.sort(function(n1,n2){
 	 			return n2.total_score - n1.total_score;
 	 		});
-	 		_this.upDateRanking(rankingData);
+	 		_this.updateRanking(rankingData);
 
-	 	},1000);
-	 	this.upDateRanking(rankingData);
+	 	},1000);*/
+	 	// this.updateRanking(rankingData);
 		// this.model.addLine(this.ipToPc('2132'),this.ipToPc('123132'));
 		// this.model.addLine('area4_pc_A1_1','area2_plc4');
 		// this.model.addLine('area4_pc_B1_7','area2_plc6');
@@ -127,27 +126,27 @@ this.FTKJ = this.FTKJ || {};
 
 		redLogSocked.onmessage = function(e) {
 			// console.log('red',e.data);
-			_this.upDateRedLog(e.data);
+			_this.updateRedLog(e.data);
 		};
 
 		blueLogSocked.onmessage = function(e) {
 			// console.log('blue',e.data);
-			_this.upDateBlueLog(e.data);
+			_this.updateBlueLog(e.data);
 		};
 		rankingLogSocked.onmessage = function(e) {
 			// console.log('ranking',e.data);
-			// _this.upDateRanking(e.data);
+			// _this.updateRanking(e.data);
 		};
 		whiteLogSocked.onmessage = function(e) {
 			// console.log('white',e.data);
-			_this.upDateWhiteLog(e.data);
+			_this.updateWhiteLog(e.data);
 		};
 
 		this.sockedArr.push(redLogSocked,blueLogSocked,rankingLogSocked,whiteLogSocked);
 		
 
 		this.blueAutoUpdate(); // 蓝方日志需要预先开启一个定时器。
-		this.redAutoUpdate(); // 蓝方日志需要预先开启一个定时器。
+		this.redAutoUpdate(); // 红方日志需要预先开启一个定时器。
 	};
 
 	p.initPage = function() {
@@ -172,7 +171,7 @@ this.FTKJ = this.FTKJ || {};
 	 * 'time': 'May-8-23:13:04' 	// 时间 ，取时分秒。
 	 * }
 	 */
-	p.upDateRedLog = function(json) {
+	p.updateRedLog = function(json) {
 		
 		if (typeof json == 'string') {
 			json = eval('('+json+')');
@@ -187,7 +186,7 @@ this.FTKJ = this.FTKJ || {};
 	 * 单个数据为数组
 	 * ['ICS-VSPHD01','光驱挂载','2018-05-11T14:01:13Z','接入介质']
 	 */
-	p.upDateBlueLog = function(arr) {
+	p.updateBlueLog = function(arr) {
 		if (typeof arr == 'string') {
 			arr = eval('('+arr+')');
 		}
@@ -198,7 +197,7 @@ this.FTKJ = this.FTKJ || {};
 	 * 后台每次传入一个数据，
 	 * {status:[1,'渣渣团队','2018-05-12 13:12:38.296103+00:00','550人比赛，剩下最后的一个代号是什么']}
 	 */
-	p.upDateWhiteLog = function(json) {
+	p.updateWhiteLog = function(json) {
 		if (typeof json == 'string') {
 			json = eval('('+json+')');
 		}
@@ -214,7 +213,7 @@ this.FTKJ = this.FTKJ || {};
 				'<span>'+sName+'</span>'+
 				'<p>'+arr[2].match(this.regJson.time)+'  '+arr[1]+' '+arr[3]+'</p>'+
 			'</li>';
-		this.upDateLog(this.$whiteLogUl,10,str,0.5);
+		this.updateLog(this.$whiteLogUl,10,str,0.5);
 	};
 
 	/**
@@ -228,7 +227,7 @@ this.FTKJ = this.FTKJ || {};
 	 * 队伍第一次上榜，新增dom.
 	 * 名次变化，移动变化的dom
 	 */
-	p.upDateRanking = function(arr) {
+	p.updateRanking = function(arr) {
 		if (typeof arr == 'string') {
 			arr = eval('('+arr+')');
 		}
@@ -287,7 +286,7 @@ this.FTKJ = this.FTKJ || {};
 	 * @param  {[number]} n   [页面最多展示多少条]
 	 * @param  {[string]} str [添加的新的内容]
 	 */
-	p.upDateLog = function($ul,n,str,during) {
+	p.updateLog = function($ul,n,str,during) {
 		let len = $ul.children().length;
 		if (len >= n) {
 			let $li0 = $ul.find('li').eq(0);
@@ -355,7 +354,7 @@ this.FTKJ = this.FTKJ || {};
 								'<span>'+sName+'</span>'+
 								'<p>'+json['time'].split('-')[2]+'  '+json['ip_source']+' -> '+json['ip_destination']+'</p>'+
 							'</li>';
-					_this.upDateLog(_this.$redLogUl,10,str,0.1);
+					_this.updateLog(_this.$redLogUl,10,str,0.1);
 					_this.model.addLine(_this.ipToPc(json['ip_source']),_this.ipToPc(json['ip_destination']),cColor,aType);
 				}
 				loop(loopTime);
@@ -390,7 +389,7 @@ this.FTKJ = this.FTKJ || {};
 				'<p>'+arr[2].match(_this.regJson.time)+'  '+arr[0]+' '+arr[1]+'</p>'+
 			'</li>';
 			_this.$num5.html(_this.$num5.html()*1 + 1);
-			_this.upDateLog(_this.$blueLogUl,10,str,0.3);
+			_this.updateLog(_this.$blueLogUl,10,str,0.3);
 		},500);
 	};
 

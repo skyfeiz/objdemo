@@ -47,7 +47,7 @@ var shaders = {
 			'}'
 		].join('')
 	},
-		/*---------------------------带贴图的粒子-------------------------------*/
+        /*---------------------------带贴图的粒子-------------------------------*/
     pointShader: {
 
         uniforms: {
@@ -115,5 +115,53 @@ var shaders = {
 
         ].join('\n')
 
-    }
+    },
+        /*---------------------------烟雾-------------------------------*/
+    smokeShader: {
+
+        vertexShader: [
+
+            'attribute float size;',
+
+            'attribute float aOpacity;',
+
+            'varying float vOpacity;',
+
+            'void main() {',
+
+                'vOpacity = aOpacity;',
+
+                'vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );',
+
+                'gl_PointSize = size*( 600.0 / length( mvPosition.xyz ) );',
+
+                'gl_Position = projectionMatrix * mvPosition;',
+            '}'
+
+        ].join('\n'),
+
+        fragmentShader: [
+
+            // 'uniform vec3 color;',
+
+            'uniform float opacity;',
+
+            'uniform sampler2D texture;',
+
+            'varying float vOpacity;',
+
+            'void main() {',
+
+                // 'gl_FragColor = vec4( mix(vColor,lineColor,vOpacity), opacity*vOpacity );',
+
+                'gl_FragColor = vec4( 1.,1.,1., vOpacity );',
+
+                'gl_FragColor = gl_FragColor * texture2D( texture, gl_PointCoord );',
+
+            '}'
+
+        ].join('\n')
+
+    },
+
 };
